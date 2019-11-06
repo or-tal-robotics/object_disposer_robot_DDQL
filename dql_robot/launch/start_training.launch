@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- This version uses the openai_ros environments -->
+    <rosparam command="load" file="$(find dql_robot)/config/catch_params.yaml" />
+    <!-- Launch the training system -->
+    <node pkg="dql_robot" name="dql_robot" type="start_training.py" output="screen"/>
+    <node pkg="dql_robot" name="recorder_node" type="learning_recorder_node.py" output="screen"/>
+</launch>

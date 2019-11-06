@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+
+
+<!--insert the "stupid" car-->
+<arg name="line_follower_car_robot_urdf" default="$(find xacro)/xacro.py '$(find dql_robot)/urdf/line_follower_robot/my_robot_car.urdf.xacro'" />
+
+
+
+
+<!--MY "stupied" CAR - (line follower car)-->
+
+<group ns="line_follower_car">
+
+ <param name="robot_description_2" command="$(arg line_follower_car_robot_urdf)" />
+
+  <node name="spawn_car_model" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description_2 -model line_follower_car -y -28 -z 0.15"/>
+
+  
+<!--<node pkg="robot_state_publisher" name="publisher_state_pub_car" type="robot_state_publisher">
+<param name="publish_frequency_2" type="double" value="100.0" />
+
+
+</node>-->
+
+
+<!--<node pkg="dql_robot" name="line_follower" type="line_follower.py" output="screen"> 
+ </node>-->
+
+</group>
+<!--END MY CAR-->
+ 
+
+
+</launch>

@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+  name="line_follower_car">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.121176883607609 0.245336833421842 3.70438456598062E-08"
+        rpy="0 0 0" />
+      <mass
+        value="1796.97865256524" />
+      <inertia
+        ixx="419.399826154156"
+        ixy="-18.0437550999314"
+        ixz="-0.000703819016455144"
+        iyy="1154.23750311412"
+        iyz="-0.000294416340527872"
+        izz="811.262530186725" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.964705882352941 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="r_front_w">
+    <inertial>
+      <origin
+        xyz="1.66533453693773E-16 -0.110077128491063 0"
+        rpy="0 0 0" />
+      <mass
+        value="5.89952495009788" />
+      <inertia
+        ixx="0.066041639269546"
+        ixy="-4.14288649068155E-17"
+        ixz="1.04083408558608E-17"
+        iyy="0.0822711285244962"
+        iyz="5.95395022137543E-17"
+        izz="0.0660416392695461" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_front_w.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_front_w.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_front_wheel"
+    type="continuous">
+    <origin
+      xyz="-0.55 0.79983 0.1"
+      rpy="3.1416 -0.28663 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="r_front_w" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="r_front_w_r">
+    <inertial>
+      <origin
+        xyz="1.11022302462516E-16 -1.38777878078145E-17 -0.10826078661346"
+        rpy="0 0 0" />
+      <mass
+        value="13.6879351423523" />
+      <inertia
+        ixx="0.301179544297615"
+        ixy="-6.62307976283288E-34"
+        ixz="-7.4918392515965E-20"
+        iyy="0.301179544297615"
+        iyz="2.75857039459522E-33"
+        izz="0.602237244546672" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_front_w_r.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_front_w_r.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_front_wheel_rub"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="-1.5708 -0.28663 0" />
+    <parent
+      link="r_front_w" />
+    <child
+      link="r_front_w_r" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="r_rare_w">
+    <inertial>
+      <origin
+        xyz="1.11022302462516E-16 -0.110077128491063 -1.11022302462516E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.89952495009788" />
+      <inertia
+        ixx="0.0660416392695461"
+        ixy="-5.66228403125209E-17"
+        ixz="6.93889390390723E-18"
+        iyy="0.0822711285244961"
+        iyz="-1.05899402079944E-16"
+        izz="0.0660416392695461" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_rare_w.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_rare_w.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_rare_wheel"
+    type="continuous">
+    <origin
+      xyz="0.7 0.79983 0.1"
+      rpy="3.1416 0.084349 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="r_rare_w" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="r_rare_w_r">
+    <inertial>
+      <origin
+        xyz="-3.33066907387547E-16 1.38777878078145E-17 -0.10826078661346"
+        rpy="0 0 0" />
+      <mass
+        value="13.6879351423523" />
+      <inertia
+        ixx="0.301179544297615"
+        ixy="-5.23531169847057E-33"
+        ixz="-9.29884287240573E-20"
+        iyy="0.301179544297615"
+        iyz="-2.70326811098476E-33"
+        izz="0.602237244546672" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_rare_w_r.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/r_rare_w_r.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_rare_wheel_rub"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="-1.5708 0.084349 0" />
+    <parent
+      link="r_rare_w" />
+    <child
+      link="r_rare_w_r" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="l_front_w">
+    <inertial>
+      <origin
+        xyz="0 0.110260672582107 -1.38777878078145E-17"
+        rpy="0 0 0" />
+      <mass
+        value="5.8995249500979" />
+      <inertia
+        ixx="0.0660416392695463"
+        ixy="3.45582359668617E-17"
+        ixz="6.93889390390723E-18"
+        iyy="0.0822711285244961"
+        iyz="3.8432976798056E-17"
+        izz="0.0660416392695462" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_front_w.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_front_w.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_front_wheel"
+    type="continuous">
+    <origin
+      xyz="-0.55 -0.79983 0.1"
+      rpy="3.1416 0.16057 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="l_front_w" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l_front_w_r">
+    <inertial>
+      <origin
+        xyz="-4.44089209850063E-16 4.16333634234434E-17 0.112077014459711"
+        rpy="0 0 0" />
+      <mass
+        value="13.6879351423523" />
+      <inertia
+        ixx="0.301179544297615"
+        ixy="-6.62307976283426E-34"
+        ixz="9.67469514608974E-20"
+        iyy="0.301179544297615"
+        iyz="-7.39829809662656E-34"
+        izz="0.602237244546673" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_front_w_r.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_front_w_r.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_front_wheel_rub"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="-1.5708 0.16057 0" />
+    <parent
+      link="l_front_w" />
+    <child
+      link="l_front_w_r" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="l_rare_w">
+    <inertial>
+      <origin
+        xyz="2.22044604925031E-16 0.110260672582108 1.66533453693773E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.89952495009787" />
+      <inertia
+        ixx="0.0660416392695459"
+        ixy="-2.51663328040209E-17"
+        ixz="2.90566182226115E-17"
+        iyy="0.082271128524496"
+        iyz="-3.343233806547E-17"
+        izz="0.066041639269546" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_rare_w.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_rare_w.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_rare_wheel"
+    type="continuous">
+    <origin
+      xyz="0.7 -0.79983 0.1"
+      rpy="3.1416 0.11708 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="l_rare_w" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l_rare_w_r">
+    <inertial>
+      <origin
+        xyz="0 2.77555756156289E-17 0.117077014459711"
+        rpy="0 0 0" />
+      <mass
+        value="13.6879351423523" />
+      <inertia
+        ixx="0.301179544297614"
+        ixy="-6.7762635780344E-21"
+        ixz="-4.57249383620944E-20"
+        iyy="0.301179544297614"
+        iyz="-1.55615301850492E-23"
+        izz="0.602237244546671" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_rare_w_r.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dql_robot/meshes_line_follower_car/l_rare_w_r.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_rare_wheel_rub"
+    type="fixed">
+    <origin
+      xyz="0 0.01 0"
+      rpy="-1.5708 0.1172 0" />
+    <parent
+      link="l_rare_w" />
+    <child
+      link="l_rare_w_r" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/DarkYellow        </material>
+  </gazebo>
+
+    <gazebo reference="l_rare_w">
+    <material>Gazebo/Orange        </material>
+  </gazebo>
+
+      <gazebo reference="r_rare_w">
+    <material>Gazebo/Orange        </material>
+  </gazebo>
+
+      <gazebo reference="l_front_w">
+    <material>Gazebo/Orange        </material>
+  </gazebo>
+
+      <gazebo reference="r_front_w">
+    <material>Gazebo/Orange        </material>
+  </gazebo>
+
+
+
+
+<gazebo reference="l_front_wheel"/>
+<gazebo reference="r_front_wheel"/>
+<gazebo reference="l_rare_wheel"/>
+<gazebo reference="r_rare_wheel"/>
+
+<gazebo>
+  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+    <updateRate>100.0</updateRate>
+    <!--<robotNamespace>/</robotNamespace>-->
+    <leftFrontJoint>l_front_wheel</leftFrontJoint>
+    <rightFrontJoint>r_front_wheel</rightFrontJoint>
+    <leftRearJoint>l_rare_wheel</leftRearJoint>
+    <rightRearJoint>r_rare_wheel</rightRearJoint>
+    <wheelSeparation>1.6</wheelSeparation>
+    <wheelDiameter>0.5</wheelDiameter>
+    <robotBaseFrame>base_link</robotBaseFrame>
+    <commandTopic>cmd_vel_car</commandTopic>
+    <torque>2000</torque>
+    <topicName>cmd_vel_car</topicName>
+    <broadcastTF>false</broadcastTF>
+  </plugin>
+</gazebo>
+
+  <link name="camera_link_car">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <joint name="camera_joint_car" type="fixed">
+    <axis xyz="0 -1 0" />
+    <origin xyz="-0.86 -1.6 0.6" rpy="0 0 600"/>
+    <parent link="base_link"/>
+    <child link="camera_link_car"/>
+  </joint>
+
+ <gazebo reference="camera_link_car">
+    <sensor type="camera" name="camera_car">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.15</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/front_camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link_car</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+<!-- camera-->
+<xacro:property name="camera_link_car" value="0.05" /> <!-- Size of square 'camera' box -->
+
+</robot>

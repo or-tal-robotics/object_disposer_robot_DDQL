@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+
+
+<!--insert the "ROBOT" car-->
+<arg name="object_disposer_robot_urdf_file" default="$(find xacro)/xacro.py '$(find dql_robot)/urdf/object_disposer_robot/my_robot_a.SLDASM.urdf.xacro'" />
+
+
+
+
+<!--MY "smart" CAR - (main car)-->
+
+<group ns="object_disposer_robot">
+
+        <!--move ROBOT CAR with joystick-->
+
+
+<!--<include file="$(find my_robot_a)/launch/joystick.launch" />-->
+<!--<include file="$(find my_robot_a)/launch/get_pos_robot_a.launch" />-->
+
+
+<param name="robot_description_3" command="$(arg object_disposer_robot_urdf_file)" />
+
+<node name="spawn_robot_model" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description_3 -model object_disposer_robot -y 15 -z 0.15"/>
+
+ <!-- 
+<node pkg="robot_state_publisher" name="publisher_state_pub_a" type="robot_state_publisher">
+<param name="publish_frequency" type="double" value="100.0" />
+</node>-->
+
+
+<!---<node pkg="my_robot_a" name="line_follower_test" type="line_follower.py" output="screen"> 
+  
+ </node>-->
+
+</group>
+
+
+<!--END MY CAR-->
+ 
+</launch>
