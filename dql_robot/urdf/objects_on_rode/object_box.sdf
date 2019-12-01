@@ -5,7 +5,7 @@
   <!--<static>f</static>-->
     <link name="link">
       <inertial>
-        <mass>1.0</mass>
+        <mass>50.0</mass>
         <inertia> <!-- inertias are tricky to compute -->
           <!-- http://gazebosim.org/tutorials?tut=inertia&cat=build_robot -->
           <ixx>0.083</ixx>       <!-- for a box: ixx = 0.083 * mass * (y*y + z*z) -->
@@ -19,14 +19,14 @@
       <collision name="collision">
         <geometry>
           <box>
-            <size>1 1 1</size>
+            <size>0.6 0.6 0.6</size>
           </box>
         </geometry>
       <surface>
         <friction>
           <ode>
-            <mu>0.056</mu>
-            <mu2>0.05</mu2>
+            <mu>0.001</mu>
+            <mu2>0.001</mu2>
           </ode>
         </friction>
       </surface>
@@ -35,7 +35,7 @@
               
         <geometry>
           <box>
-            <size>1 1 1</size>
+            <size>0.6 0.6 0.6</size>
           </box>
         </geometry>
           <material>
