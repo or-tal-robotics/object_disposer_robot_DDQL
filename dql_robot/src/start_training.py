@@ -25,7 +25,7 @@ IM_SIZE = 84
 LASER_SIZE = 720
 LASER_MIN = 0.1
 LASER_MAX = 10
-K = 5
+K = 3
 n_history = 4
 
 def smooth(x):
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     rospy.loginfo("Monitor Wrapper started")
     last_time_steps = np.ndarray(0)
     gamma = rospy.get_param("/turtlebot2/gamma")
-    K = gamma = rospy.get_param("/turtlebot2/n_actions")
+    K = rospy.get_param("/turtlebot2/n_actions")
     batch_sz = 32
     num_episodes = rospy.get_param("/turtlebot2/nepisodes")
     total_t = 0

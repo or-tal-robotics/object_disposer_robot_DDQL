@@ -1,10 +1,10 @@
 turtlebot2: #namespace
     
-    n_actions: 5 # We have 3 actions, Forwards,TurnLeft,TurnRight,Backwards
+    n_actions: 3 # We have 3 actions, Forwards,TurnLeft,TurnRight,Backwards
 
     speed_step: 1.0 # Time to wait in the reset phases
 
-    linear_forward_speed: 6.5 # Spwwed for ging fowards
+    linear_forward_speed: 8.5 # Spwwed for ging fowards
     linear_turn_speed: 6.5 # Lienare speed when turning
     angular_speed: 6.7 # Angular speed when turning Left or Right
 

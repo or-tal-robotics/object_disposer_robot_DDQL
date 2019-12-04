@@ -72,6 +72,7 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         rospy.Subscriber("/line_follower_car/front_camera/image_raw",Image,self._camera_rgb_image_raw_callback_line_follower_car)
         #subscribe to front camera of object disposer robot
         rospy.Subscriber("/object_disposer_robot/front_camera/image_raw",Image, self._camera_rgb_image_raw_callback_object_disposer_car)
+        rospy.Subscriber("/object_disposer_robot/top_camera/image_raw",Image, self._camera_rgb_image_raw_callback_object_disposer_car_top_camera)
                 
         #publuish speed to line follower robot
         self._cmd_vel_pub_line_follower_car=rospy.Publisher('/line_follower_car/cmd_vel_car',
@@ -146,6 +147,9 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
 
     def _camera_rgb_image_raw_callback_object_disposer_car(self, data):
             self.camera_rgb_image_raw_object_disposer_car = self.bridge.imgmsg_to_cv2(data,"rgb8")
+    
+    def _camera_rgb_image_raw_callback_object_disposer_car_top_camera(self, data):
+            self.camera_rgb_image_raw_object_disposer_car_top_camera = self.bridge.imgmsg_to_cv2(data,"rgb8")
 
     def _camera_rgb_image_raw_callback_line_follower_car(self, data):
             self.camera_rgb_image_raw_line_follower_car = self.bridge.imgmsg_to_cv2(data,"rgb8")
@@ -245,6 +249,9 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         
     def get_camera_rgb_image_raw(self):
         return self.camera_rgb_image_raw_object_disposer_car
+
+    def get_camera_rgb_image_raw_top_camera(self):
+        return self.camera_rgb_image_raw_object_disposer_car_top_camera
 
             
 

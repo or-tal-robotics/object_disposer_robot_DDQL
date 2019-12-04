@@ -127,7 +127,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         
         
         #print("Start Set Action ==>"+str(action))
-        
+        linear_speed = 0.0
+        angular_speed = 0.0
 
         if action == 0: #FORWARD
             linear_speed = self.linear_forward_speed
@@ -141,16 +142,16 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             linear_speed = 0.0
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
-        elif action == 3: #RIGHT FORWARD
-            linear_speed = self.linear_turn_speed
-            angular_speed = -self.angular_speed
-            self.last_action = "FORWARDS_TURN_RIGHT"
-        elif action == 4: #LEFT FORWARD
-            linear_speed = self.linear_turn_speed
-            angular_speed = self.angular_speed
-            self.last_action = "FORWARDS_TURN_LEFT"
+        # elif action == 3: #RIGHT FORWARD
+        #     linear_speed = self.linear_turn_speed
+        #     angular_speed = -self.angular_speed
+        #     self.last_action = "FORWARDS_TURN_RIGHT"
+        # elif action == 4: #LEFT FORWARD
+        #     linear_speed = self.linear_turn_speed
+        #     angular_speed = self.angular_speed
+        #     self.last_action = "FORWARDS_TURN_LEFT"
         self.move_base(linear_speed, angular_speed, epsilon=0.05, update_rate=10)  
-        time.sleep(0.025)
+        time.sleep(0.035)
 
     def _get_obs(self):
         """
@@ -161,7 +162,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         """
         rospy.logdebug("Start Get Observation ==>")
         # We get the laser scan data
-        img_observations = self.get_camera_rgb_image_raw()
+        img_observations = self.get_camera_rgb_image_raw_top_camera()
         #laser_observations = [self.LaserScan_prey, self.LaserScan_predator]
         rospy.logdebug("END Get Observation ==>")
         return img_observations
@@ -353,7 +354,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #         print " === object disposer robot COLLECTED the object box ==="
         #         self.box_collected_flag=1
                 
-        if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.35)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.25)))):
+        if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.57) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.35)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.28)))):
             if self.box_collected_flag==0:
                 print " === object disposer robot COLLECTED the object box ==="
                 self.box_collected_flag=1
@@ -367,10 +368,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             if self.crash ==1:
                 reward=-1.75
             if self.out_of_lines_without_box ==1:
-                reward=-1.0
+                reward=-2.0
                 self.out_of_lines_without_box=0
             if self.out_of_line_with_box ==1:
-                reward=2.0
+                reward=3.0
                 #reward=0.0
                 self.out_of_line_with_box=0
             self.box_collected_reward_given=0
@@ -379,7 +380,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         else:
             #positive reward for collecting the box
             if self.box_collected_flag == 1 and self.box_collected_reward_given==0:
-                reward = 0.5
+                reward = 1.5
                 #reward=0.0
                 self.box_collected_reward_given=1
             #negative reward from collection box moment until box out of lines.
