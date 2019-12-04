@@ -70,8 +70,8 @@
           <surface>
             <friction>
               <ode>
-                <mu>2</mu>
-                <mu2>1</mu2>
+                <mu>1.4</mu>
+                <mu2>0.7</mu2>
               </ode>
               <torsional>
                 <ode/>
@@ -140,7 +140,7 @@
   <!--<static>f</static>-->
     <link name="link">
       <inertial>
-        <mass>70.0</mass>
+        <mass>90.0</mass>
         <inertia> <!-- inertias are tricky to compute -->
           <!-- http://gazebosim.org/tutorials?tut=inertia&cat=build_robot -->
           <ixx>0.083</ixx>       <!-- for a box: ixx = 0.083 * mass * (y*y + z*z) -->
@@ -154,7 +154,7 @@
       <collision name="collision">
         <geometry>
           <box>
-            <size>1 1 1</size>
+            <size>0.6 0.6 0.6</size>
           </box>
         </geometry>
       </collision>
@@ -162,14 +162,14 @@
               
         <geometry>
           <box>
-            <size>1 1 1</size>
+            <size>0.6 0.6 0.6</size>
           </box>
         </geometry>
       <surface>
         <friction>
           <ode>
-            <mu>0.01</mu>
-            <mu2>0.01</mu2>
+            <mu>0.0001</mu>
+            <mu2>0.0001</mu2>
           </ode>
         </friction>
       </surface>
@@ -183,6 +183,53 @@
     </link>
 
 </model>
+ <!-- Camera for recording-->
+
+
+    <model name='camera'>
+      <static>true</static>
+      <pose>-1 0 21  0 1.545 1.545</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name='gazebo_camera' type='camera'>
+          <camera>
+            <horizontal_fov>2.5</horizontal_fov>
+            <image>
+              <width>1920</width>
+              <height>1080</height>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>400</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+
+        <plugin name="gazebo_camera" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>gazebo_camera</cameraName>
+        <imageTopicName>/gazebo/image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+        </plugin>
+
+        </sensor>
+      </link>
+    </model>
 
   </world>
 </sdf>

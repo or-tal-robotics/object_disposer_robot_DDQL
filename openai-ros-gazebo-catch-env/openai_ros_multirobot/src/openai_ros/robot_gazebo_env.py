@@ -154,11 +154,11 @@ class RobotGazeboEnv(gym.Env):
             line_follower_car_model.reference_frame = "world"
 
             #add box (object on rode) in random position.
-            object_box_x = np.random.uniform(low=-35.4, high=object_disposer_robot_x-2)
+            object_box_x = np.random.uniform(low=-35.4, high=object_disposer_robot_x-5)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_x = np.random.uniform(low=object_disposer_robot_x+2, high=25.4)
+                object_box_x = np.random.uniform(low=object_disposer_robot_x+5, high=25.4)
 
             object_box_y = np.random.uniform(low=15.0, high=20.0)
             object_box_theta = np.random.uniform(low=0.0, high=2*np.pi)

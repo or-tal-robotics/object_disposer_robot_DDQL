@@ -103,6 +103,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.out_of_lines_without_box=0
         self.out_of_line_with_box=0
         self.box_collected_reward_given=0
+        self.box_out_flag=0
 
     def _init_env_variables(self):
         """
@@ -172,6 +173,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         object_disposer_position = np.array(self.get_object_disposer_robot_position())
         line_follower_car_position= np.array(self.get_line_follower_car_position())
         object_box_position=np.array(self.get_object_box_position())
+        object_disposer_orentation=np.array(self.get_object_box_orientation())
 
         #the reset application WITHOUT rewards!! keep in mind
         if object_disposer_position[0]> -39.1 and object_disposer_position[0]<27.4:
@@ -186,7 +188,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 else:
                     print "====+++ The robot push out the BOX +++==="
                     
-                self.box_collected_flag=0
                 self._episode_done = True
         else:
             #zone --A--B--C--D--
@@ -205,7 +206,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             else:
                                 print "====+++ The robot push out the BOX +++==="
                                 self.out_of_line_with_box=1
-                            self.box_collected_flag=0
                             self._episode_done = True
 
                 #between B and C
@@ -228,7 +228,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         else:
                             print "====+++ The robot push out the BOX +++==="
                             self.out_of_line_with_box=1
-                        self.box_collected_flag=0
                         self._episode_done = True
 
                 #beetwen C and D
@@ -249,7 +248,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         else:
                             print "====+++ The robot push out the BOX +++==="
                             self.out_of_line_with_box=1
-                        self.box_collected_flag=0
                         self._episode_done = True
             
             #zone --E--F--G--H--
@@ -268,7 +266,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             else:
                                 print "====+++ The robot push out the BOX +++==="
                                 self.out_of_line_with_box=1
-                            self.box_collected_flag=0
                             self._episode_done = True
 
                 #between F and G
@@ -292,7 +289,6 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         else:
                             print "====+++ The robot push out the BOX +++==="
                             self.out_of_line_with_box=1
-                        self.box_collected_flag=0
                         self._episode_done = True
 
                 #between G and H
@@ -311,14 +307,12 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             else:
                                 print "====+++ The robot push out the BOX +++==="
                                 self.out_of_line_with_box=1
-                            self.box_collected_flag=0
                             self._episode_done = True
 
         #crash between cars
         distance_line_follower_to_object_disposer = math.sqrt( ((line_follower_car_position[0]-object_disposer_position[0])**2)+((line_follower_car_position[1]-object_disposer_position[1])**2) )
         if distance_line_follower_to_object_disposer<=3.3:
             print "====+++ line follower and object disposer crashed! +++===="
-            self.box_collected_flag=0
             self._episode_done = True
             self.crash=1
 
@@ -326,38 +320,74 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #cheack if box infront of line follower car
         if ((np.isclose(object_box_position[0],line_follower_car_position[0],atol=1.75) ) and (np.isclose(object_box_position[1],line_follower_car_position[1],atol=1.15))) or ((np.isclose(object_box_position[1],line_follower_car_position[1],atol=1.75) ) and (np.isclose(object_box_position[0],line_follower_car_position[0],atol=1.15))):
             print " === line follower car SMASHED with the object box ===" 
-            self.box_collected_flag=0
             self.crash=1
             self._episode_done = True
 
         #object disposer robot collect the box.
-        if ((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.70) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.60))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.70) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.60))):
+        # if ((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.30))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.55) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.30))):
+        #     if self.box_collected_flag==0:
+        #         print " === object disposer robot COLLECTED the object box ==="
+        #         self.box_collected_flag=1
+
+        vector_object_disposert_to_object_box=[object_box_position[0]-object_disposer_position[0],object_box_position[1]-object_disposer_position[1]]
+        distance_vector_object_disposert_to_object_box=math.sqrt((object_box_position[0]-object_disposer_position[0])**2+(object_box_position[1]-object_disposer_position[1])**2)
+        norm_vector_object_disposert_to_object_box=[vector_object_disposert_to_object_box[0]/distance_vector_object_disposert_to_object_box,vector_object_disposert_to_object_box[1]/distance_vector_object_disposert_to_object_box]
+        vector_x_axis=[1,0]
+        vector_y_axis=[0,1]
+        orientation_object_disposer_box_to_x_axis=np.absolute(np.arccos(np.dot(norm_vector_object_disposert_to_object_box,vector_x_axis)))
+        orientation_object_disposer_box_to_y_axis=np.absolute(np.arccos(np.dot(norm_vector_object_disposert_to_object_box,vector_y_axis)))
+        if orientation_object_disposer_box_to_x_axis>(np.pi/2.0):
+           orientation_object_disposer_box_to_x_axis=np.absolute(orientation_object_disposer_box_to_x_axis-np.pi )
+
+        if orientation_object_disposer_box_to_y_axis>(np.pi/2.0):
+           orientation_object_disposer_box_to_y_axis=np.absolute(orientation_object_disposer_box_to_y_axis-np.pi )
+
+        orient_x_object_disposer_robot=np.absolute(object_disposer_orentation[0])
+        orient_y_object_disposer_robot=np.absolute(object_disposer_orentation[1])
+
+        #print ("orient x object dis" ,orient_x_object_disposer_robot)
+        #print ("orient box object dis" ,orientation_object_disposer_box_to_x_axis)
+
+        # if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.29)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.22))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.55) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.29)) and (np.isclose(orient_y_object_disposer_robot,orientation_object_disposer_box_to_y_axis,atol=0.22)))):
+        #     if self.box_collected_flag==0:
+        #         print " === object disposer robot COLLECTED the object box ==="
+        #         self.box_collected_flag=1
+                
+        if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.35)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.25)))):
             if self.box_collected_flag==0:
                 print " === object disposer robot COLLECTED the object box ==="
-                self.box_collected_flag=1 
+                self.box_collected_flag=1
+        
 
         return self._episode_done 
 
     def _compute_reward(self, observations, done):
         reward = 0.0
         if done:     
-            if self.object_disposer_robot_win == 1:
-                reward = 1.0 
             if self.crash ==1:
-                reward=-1.0
+                reward=-1.75
             if self.out_of_lines_without_box ==1:
                 reward=-1.0
+                self.out_of_lines_without_box=0
             if self.out_of_line_with_box ==1:
                 reward=2.0
+                #reward=0.0
+                self.out_of_line_with_box=0
+            self.box_collected_reward_given=0
+            self.box_collected_flag=0
               
         else:
             #positive reward for collecting the box
             if self.box_collected_flag == 1 and self.box_collected_reward_given==0:
-                reward = 0.4
+                reward = 0.5
+                #reward=0.0
                 self.box_collected_reward_given=1
             #negative reward from collection box moment until box out of lines.
             if self.box_collected_flag == 1 and self.box_collected_reward_given==1:
-                reward=-0.005
+                reward=-0.0001
+                #pass
+            #if self.box_collected_flag==0:
+             #   reward=0.0005
             
 
         return reward

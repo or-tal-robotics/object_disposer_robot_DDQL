@@ -19,7 +19,7 @@ from std_msgs.msg import Int16
 import matplotlib.pyplot as plt
 
 MAX_EXPERIENCE = 50000
-MIN_EXPERIENCE = 500
+MIN_EXPERIENCE = 5000 #was 500 and before 5000
 TARGET_UPDATE_PERIOD = 50000
 IM_SIZE = 84
 LASER_SIZE = 720
@@ -100,7 +100,6 @@ def play_ones(
         img_obs, reward, done, _ = env.step(action)
         #img_obs = all_obs[0]
         #laser_obs = all_obs[1]
-        next_state = []
         
         episode_reward += reward
 
@@ -110,6 +109,9 @@ def play_ones(
         #experience_replay_buffer_prey.add_experience(action[0], obs_small1,obs_small2,  reward[0], done)
 
         obs_small = image_transformer.transform(img_obs, sess)
+        #cv2.imshow('image',obs_small)
+        #cv2.waitKey(0)
+        
         #obs_small2 = image_transformer.transform(img_obs[1][1], sess)
         next_state_object_disposer_robot= update_state(state_object_disposer_robot, obs_small,)
         experience_replay_buffer_object_disposer_robot.add_experience(action, obs_small, reward, done)
@@ -172,7 +174,8 @@ if __name__ == '__main__':
     skip_intervel = 50
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
-    epsilon_change = (epsilon - epsilon_min) / 100000
+    #epsilon_change = (epsilon - epsilon_min) / 100000
+    epsilon_change = (epsilon - epsilon_min) / 150000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
@@ -252,7 +255,7 @@ if __name__ == '__main__':
                 obs = env.reset()
 
         
-        print("Done! Starts Training!!")     
+        print("Done! Starts Training newwww!!")     
         t0 = datetime.now()
         for i in range(num_episodes):
             msg_data = Int16()
@@ -298,7 +301,7 @@ if __name__ == '__main__':
             sys.stdout.flush()
         print("Total duration:", datetime.now()-t0)
         
-        y1 = smooth(episode_rewards[:])
+        y1 = smooth(episode_rewards)
         #y2 = smooth(episode_rewards[1,:])
 
         plt.plot(y1, label='object_disposer_robot')
