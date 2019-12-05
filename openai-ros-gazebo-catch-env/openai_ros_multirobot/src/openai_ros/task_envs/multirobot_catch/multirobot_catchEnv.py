@@ -142,6 +142,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             linear_speed = 0.0
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
+        elif action == 3: #BACK
+            linear_speed =-3.5
+            self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
         #     angular_speed = -self.angular_speed
@@ -151,7 +154,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #     angular_speed = self.angular_speed
         #     self.last_action = "FORWARDS_TURN_LEFT"
         self.move_base(linear_speed, angular_speed, epsilon=0.05, update_rate=10)  
-        time.sleep(0.0035)
+        time.sleep(0.0015)
 
     def _get_obs(self):
         """

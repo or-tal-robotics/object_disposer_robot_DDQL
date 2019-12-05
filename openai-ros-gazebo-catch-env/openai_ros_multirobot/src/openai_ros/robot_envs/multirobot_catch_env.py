@@ -109,13 +109,26 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         object_disposer_robot_idx=models.index('object_disposer_robot')
         line_follower_car_idx=models.index('line_follower_car')
         object_box_idx=models.index('object_box')
+        object_box_2_idx=models.index('object_box_2')
+        object_box_3_idx=models.index('object_box_3')
+        object_box_4_idx=models.index('object_box_4')
 
         #self.predator_position = [msg.pose[predator_idx].position.x, msg.pose[predator_idx].position.y]
         #self.prey_position = [msg.pose[prey_idx].position.x, msg.pose[prey_idx].position.y]
         self.line_follower_car_position = [msg.pose[line_follower_car_idx].position.x, msg.pose[line_follower_car_idx].position.y]
         self.object_disposer_robot_position=[msg.pose[object_disposer_robot_idx].position.x, msg.pose[object_disposer_robot_idx].position.y]
+        
         self.object_box_position=[msg.pose[object_box_idx].position.x, msg.pose[object_box_idx].position.y]
         self.object_box_orientation=[msg.pose[object_box_idx].orientation.x, msg.pose[object_box_idx].orientation.y]
+
+        self.object_box_2_position=[msg.pose[object_box_2_idx].position.x, msg.pose[object_box_2_idx].position.y]
+        self.object_box_2_orientation=[msg.pose[object_box_2_idx].orientation.x, msg.pose[object_box_2_idx].orientation.y]
+
+        self.object_box_3_position=[msg.pose[object_box_3_idx].position.x, msg.pose[object_box_3_idx].position.y]
+        self.object_box_3_orientation=[msg.pose[object_box_3_idx].orientation.x, msg.pose[object_box_3_idx].orientation.y]
+
+        self.object_box_4_position=[msg.pose[object_box_4_idx].position.x, msg.pose[object_box_4_idx].position.y]
+        self.object_box_4_orientation=[msg.pose[object_box_4_idx].orientation.x, msg.pose[object_box_4_idx].orientation.y]
 
     def _check_all_systems_ready(self):
         """
@@ -272,3 +285,21 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
 
     def get_object_box_orientation(self):
         return self.object_box_orientation
+
+    def get_object_box_2_position(self):
+        return self.object_box_2_position
+
+    def get_object_box_2_orientation(self):
+        return self.object_box_2_orientation
+
+    def get_object_box_3_position(self):
+        return self.object_box_3_position
+
+    def get_object_box_3_orientation(self):
+        return self.object_box_3_orientation
+
+    def get_object_box_4_position(self):
+        return self.object_box_4_position
+
+    def get_object_box_4_orientation(self):
+        return self.object_box_4_orientation

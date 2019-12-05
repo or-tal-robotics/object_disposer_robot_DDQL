@@ -25,7 +25,7 @@ IM_SIZE = 84
 LASER_SIZE = 720
 LASER_MIN = 0.1
 LASER_MAX = 10
-K = 3
+K = 4
 n_history = 4
 
 def smooth(x):

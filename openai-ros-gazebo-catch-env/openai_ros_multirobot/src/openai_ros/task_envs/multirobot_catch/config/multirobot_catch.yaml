@@ -1,6 +1,6 @@
 turtlebot2: #namespace
     
-    n_actions: 3 # We have 3 actions, Forwards,TurnLeft,TurnRight,Backwards
+    n_actions: 4 # We have 3 actions, Forwards,TurnLeft,TurnRight,Backwards
 
     speed_step: 1.0 # Time to wait in the reset phases
 

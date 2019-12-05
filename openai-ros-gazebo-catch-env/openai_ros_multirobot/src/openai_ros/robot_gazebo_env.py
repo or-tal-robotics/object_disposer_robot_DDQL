@@ -170,9 +170,62 @@ class RobotGazeboEnv(gym.Env):
             object_box_model.reference_frame = "world"
 
 
+            #add box (object on rode) in random position.
+            object_box_2_x = np.random.uniform(low=-35.4, high=object_disposer_robot_x-5)
+            if object_disposer_robot_move_direction==0:
+                pass
+            else:
+                object_box_2_x = np.random.uniform(low=object_disposer_robot_x+5, high=25.4)
+
+            object_box_2_y = np.random.uniform(low=15.0, high=20.0)
+            object_box_2_theta = np.random.uniform(low=0.0, high=2*np.pi)
+            object_box_2_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
+            object_box_2_pose   =   Pose(Point(x=object_box_2_x, y=object_box_2_y,    z=0.15),   object_box_2_orient)
+            object_box_2_model = ModelState()
+            object_box_2_model.model_name = "object_box_2"
+            object_box_2_model.pose = object_box_2_pose
+            object_box_2_model.reference_frame = "world"
+
+
+            object_box_3_x = np.random.uniform(low=-35.4, high=object_disposer_robot_x-5)
+            if object_disposer_robot_move_direction==0:
+                pass
+            else:
+                object_box_3_x = np.random.uniform(low=object_disposer_robot_x+5, high=25.4)
+
+            object_box_3_y = np.random.uniform(low=15.0, high=20.0)
+            object_box_3_theta = np.random.uniform(low=0.0, high=2*np.pi)
+            object_box_3_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
+            object_box_3_pose   =   Pose(Point(x=object_box_3_x, y=object_box_3_y,    z=0.15),   object_box_3_orient)
+            object_box_3_model = ModelState()
+            object_box_3_model.model_name = "object_box_3"
+            object_box_3_model.pose = object_box_3_pose
+            object_box_3_model.reference_frame = "world"
+
+            object_box_4_x = np.random.uniform(low=-35.4, high=object_disposer_robot_x-5)
+            if object_disposer_robot_move_direction==0:
+                pass
+            else:
+                object_box_4_x = np.random.uniform(low=object_disposer_robot_x+5, high=25.4)
+
+            object_box_4_y = np.random.uniform(low=15.0, high=20.0)
+            object_box_4_theta = np.random.uniform(low=0.0, high=2*np.pi)
+            object_box_4_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
+            object_box_4_pose   =   Pose(Point(x=object_box_4_x, y=object_box_4_y,    z=0.15),   object_box_4_orient)
+            object_box_4_model = ModelState()
+            object_box_4_model.model_name = "object_box_4"
+            object_box_4_model.pose = object_box_4_pose
+            object_box_4_model.reference_frame = "world"
+
+            
+
+
             self.spawn_model(object_disposer_robot_model)   # add randomly line follower robot on rode
             self.spawn_model(line_follower_car_model)       # add randommly object_disposer robot on rode       
             self.spawn_model(object_box_model)              # add randomly box on rode
+            self.spawn_model(object_box_2_model)            # add randomly box on rode
+            self.spawn_model(object_box_3_model)            # add randomly box on rode
+            self.spawn_model(object_box_4_model)            # add randomly box on rode
 
 
     def _reset_sim(self):
