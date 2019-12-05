@@ -21,8 +21,8 @@ def RegisterOpenAI_Ros_Env(task_env, timestep_limit_per_episode=10000):
         # We register the Class through the Gym system
         register(
             id=task_env,
-            entry_point='openai_ros:task_envs.multirobot_catch.multirobot_catchEnv.CatchEnv',
-            timestep_limit=timestep_limit_per_episode,
+            entry_point='openai_ros.task_envs.multirobot_catch.multirobot_catchEnv:CatchEnv',
+           
         )
         # We have to import the Class that we registered so that it can be found afterwards in the Make
         from openai_ros.task_envs.multirobot_catch import multirobot_catchEnv
