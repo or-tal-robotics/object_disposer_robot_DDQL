@@ -76,12 +76,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_front.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.12"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -129,11 +128,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.13"
         rpy="0 0 0" />
-<geometry>
-    <cylinder length="0.3" radius="0.3"/>
-</geometry>
+      <geometry>
+    <cylinder length="0.3" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -181,12 +180,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_back.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.12"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -234,12 +232,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_back_r.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -287,12 +284,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_front.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.12"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -340,12 +336,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 -0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_front_r.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -393,12 +388,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 -0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_back.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.12"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -446,12 +440,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 -0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_back_r.STL" />
-      </geometry>
+    <cylinder length="0.3" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -467,8 +460,6 @@
     <axis
       xyz="0 0 1" />
   </joint>
-
-
 
   <gazebo reference="base_link">
     <material>Gazebo/SkyBlue      </material>
