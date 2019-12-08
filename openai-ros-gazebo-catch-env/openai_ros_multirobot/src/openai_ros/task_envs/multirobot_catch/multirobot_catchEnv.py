@@ -612,7 +612,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     self.box_4_out=1
                                     self.box_4_out_print=1
                             
-                
+        if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
+            self._episode_done = True
+
 
         #===========================================================================
 
