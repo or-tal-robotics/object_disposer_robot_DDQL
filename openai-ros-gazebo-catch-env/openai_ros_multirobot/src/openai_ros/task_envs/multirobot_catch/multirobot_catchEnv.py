@@ -124,6 +124,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.box_2_reward=0
         self.box_3_reward=0
         self.box_4_reward=0
+        self.object_disposer_returned_to_lines_reward=0
 
     def _init_env_variables(self):
         """
@@ -163,7 +164,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
         elif action == 3: #BACK
-            linear_speed =-3.5
+            linear_speed =-3.0
             self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
@@ -174,7 +175,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #     angular_speed = self.angular_speed
         #     self.last_action = "FORWARDS_TURN_LEFT"
         self.move_base(linear_speed, angular_speed, epsilon=0.05, update_rate=10)  
-        time.sleep(0.0005)
+        time.sleep(0.008) #0.005
 
     def _get_obs(self):
         """
@@ -231,6 +232,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     print "====+++ IN  BOUNDERIES +++===="
                     self.print_in_of_lines=1
                     self.print_out_of_lines=0
+                if self.object_disposer_out_of_line==1:
+                    self.object_disposer_returned_to_lines_reward=1
                 self.object_disposer_out_of_line=0
             else:
                 if self.print_out_of_lines==0: 
@@ -238,6 +241,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     self.print_out_of_lines=1
                     self.print_in_of_lines=0
                 self.object_disposer_out_of_line=1
+                self.object_disposer_returned_to_lines_reward=0
                 
                     
                 #self._episode_done = True
@@ -254,6 +258,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
+                            if self.object_disposer_out_of_line==1:
+                                self.object_disposer_returned_to_lines_reward=1
                             self.object_disposer_out_of_line=0
                         else:
                             if self.print_out_of_lines==0: 
@@ -261,6 +267,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 self.print_out_of_lines=1
                                 self.print_in_of_lines=0
                             self.object_disposer_out_of_line=1
+                            self.object_disposer_returned_to_lines_reward=0
                             
                             #self._episode_done = True
 
@@ -280,13 +287,19 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             print "====+++ IN  BOUNDERIES +++===="
                             self.print_in_of_lines=1
                             self.print_out_of_lines=0
+                        if self.object_disposer_out_of_line==1:
+                            self.object_disposer_returned_to_lines_reward=1
+                        
                         self.object_disposer_out_of_line=0
+                        
                     else:
                         if self.print_out_of_lines==0: 
                             print "====+++ OUT OF BOUNDERIES - Part B-C +++===="
                             self.print_out_of_lines=1
                             self.print_in_of_lines=0
                         self.object_disposer_out_of_line=1
+                        self.object_disposer_returned_to_lines_reward=0
+                        self.object_disposer_returned_to_lines_reward=0
 
                         #self._episode_done = True
 
@@ -304,6 +317,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
+                        if self.object_disposer_out_of_line==1:
+                            self.object_disposer_returned_to_lines_reward=1
                         self.object_disposer_out_of_line=0
                     else:
                         if self.print_out_of_lines==0: 
@@ -311,6 +326,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             self.print_out_of_lines=1
                             self.print_in_of_lines=0
                         self.object_disposer_out_of_line=1
+                        self.object_disposer_returned_to_lines_reward=0
                         #self._episode_done = True
             
             #zone --E--F--G--H--
@@ -325,6 +341,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
+                            if self.object_disposer_out_of_line==1:
+                                self.object_disposer_returned_to_lines_reward=1
                             self.object_disposer_out_of_line=0
                         else:
                             if self.print_out_of_lines==0: 
@@ -332,6 +350,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 self.print_out_of_lines=1
                                 self.print_in_of_lines=0
                             self.object_disposer_out_of_line=1
+                            self.object_disposer_returned_to_lines_reward=0
 
                             #self._episode_done = True
 
@@ -352,6 +371,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             print "====+++ IN  BOUNDERIES +++===="
                             self.print_in_of_lines=1
                             self.print_out_of_lines=0
+                        if self.object_disposer_out_of_line==1:
+                            self.object_disposer_returned_to_lines_reward=1
                         self.object_disposer_out_of_line=0
                     else:
                         if self.print_out_of_lines==0: 
@@ -359,6 +380,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             self.print_out_of_lines=1
                             self.print_in_of_lines=0
                         self.object_disposer_out_of_line=1
+                        self.object_disposer_returned_to_lines_reward=0
 
                         #self._episode_done = True
 
@@ -374,6 +396,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
+                            if self.object_disposer_out_of_line==1:
+                                self.object_disposer_returned_to_lines_reward=1
                             self.object_disposer_out_of_line=0
                         else:
                             if self.print_out_of_lines==0: 
@@ -381,6 +405,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 self.print_out_of_lines=1
                                 self.print_in_of_lines=0
                             self.object_disposer_out_of_line=1
+                            self.object_disposer_returned_to_lines_reward=0
 
                             #self._episode_done = True
 
@@ -445,13 +470,15 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         self.box_4_out_print=1
             else:
                 #zone --A--B--C--D--
+                lower_border=(-39.1)
+                upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
                 if all_boxes_position[i][0]<=-39.1:
                     #between A and B
                     if all_boxes_position[i][0]>14.27 and all_boxes_position[i][0]<22.5:
                         if all_boxes_position[i][0]<=-39.1:
-                            upper_border=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
-                            lower_border=(-39.1)
-                            if lower_border>all_boxes_position[i][0] and upper_border<all_boxes_position[i][0]:
+                            upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
+                            lower_border_box=(-39.1)
+                            if lower_border_box>all_boxes_position[i][0] and upper_border_box<all_boxes_position[i][0]:
                                 pass
                             else:
                                 if self.box_1_out_print==0 and i ==0:
@@ -472,16 +499,16 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     self.box_4_out_print=1
                         #between B and C
                     if all_boxes_position[i][1]> -19.7 and all_boxes_position[i][1]<=14.27 :
-                        upper_border=(0.0186*(all_boxes_position[i][1]**2))+(0.1736*all_boxes_position[i][1])+(-61.66)
-                        lower_border=0.031*(all_boxes_position[i][1]**2)+0.232*all_boxes_position[i][1]+(-55.31)
+                        upper_border_box=(0.0186*(all_boxes_position[i][1]**2))+(0.1736*all_boxes_position[i][1])+(-61.66)
+                        lower_border_box=0.031*(all_boxes_position[i][1]**2)+0.232*all_boxes_position[i][1]+(-55.31)
                         if all_boxes_position[i][1] < 7.04 and all_boxes_position[i][1] > (-12.29) :
-                            lower_border=0.031*(all_boxes_position[i][1]**2)+0.232*all_boxes_position[i][1]+(-55.31)
+                            lower_border_box=0.031*(all_boxes_position[i][1]**2)+0.232*all_boxes_position[i][1]+(-55.31)
                         else:
                             if all_boxes_position[i][1]>=7.04 :
-                                lower_border=0.1244*(all_boxes_position[i][1]**2)-1.144*all_boxes_position[i][1]+(-50.25)
+                                lower_border_box=0.1244*(all_boxes_position[i][1]**2)-1.144*all_boxes_position[i][1]+(-50.25)
                             elif all_boxes_position[i][1]<=-12.29 :
-                                lower_border=0.153*(all_boxes_position[i][1]**2)+3.906*all_boxes_position[i][1]+(-28.94)
-                        if lower_border>all_boxes_position[i][0] and upper_border<all_boxes_position[i][0]:
+                                lower_border_box=0.153*(all_boxes_position[i][1]**2)+3.906*all_boxes_position[i][1]+(-28.94)
+                        if lower_border_box>all_boxes_position[i][0] and upper_border_box<all_boxes_position[i][0]:
                             pass
                         else:
                             if self.box_1_out_print==0 and i ==0:
@@ -501,15 +528,17 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                 self.box_4_out=1
                                 self.box_4_out_print=1
                     #beetwen C and D
+                    lower_border_box=(-39.1)
+                    upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
                     if all_boxes_position[i][1]>-29.3 and all_boxes_position[i][1]<=-19.7 :
-                        lower_border=0.953*(all_boxes_position[i][1]**2)+35.16*all_boxes_position[i][1]+(275.9)
-                        if lower_border>=-39.1:
-                            upper_border=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
-                            lower_border=(-39.1)
+                        lower_border_box=0.953*(all_boxes_position[i][1]**2)+35.16*all_boxes_position[i][1]+(275.9)
+                        if lower_border_box>=-39.1:
+                            upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
+                            lower_border_box=(-39.1)
                         else:
-                            upper_border=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
-                            lower_border=0.953*(all_boxes_position[i][1]**2)+35.16*all_boxes_position[i][1]+(275.9)
-                    if lower_border>all_boxes_position[i][0] and upper_border<all_boxes_position[i][0]:
+                            upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
+                            lower_border_box=0.953*(all_boxes_position[i][1]**2)+35.16*all_boxes_position[i][1]+(275.9)
+                    if lower_border_box>all_boxes_position[i][0] and upper_border_box<all_boxes_position[i][0]:
                         pass
                     else:
                         if self.box_1_out_print==0 and i ==0:
@@ -530,12 +559,13 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             self.box_4_out_print=1
                 #zone --E--F--G--H--
                 elif all_boxes_position[i][0]>=27.4:
+                    lower_border_box=(27.4)
                     #between E and F
                     if all_boxes_position[i][1]> 14.27 and all_boxes_position[i][1]<22.5 :
                         if all_boxes_position[i][0]>=27.4:
-                            upper_border=(-0.3317*(all_boxes_position[i][1]**2))+(10.04*all_boxes_position[i][1])+(-34.02)
-                            lower_border=(27.4)
-                            if lower_border<all_boxes_position[i][0] and upper_border>all_boxes_position[i][0]:
+                            upper_border_box=(-0.3317*(all_boxes_position[i][1]**2))+(10.04*all_boxes_position[i][1])+(-34.02)
+                            lower_border_box=(27.4)
+                            if lower_border_box<all_boxes_position[i][0] and upper_border_box>all_boxes_position[i][0]:
                                 pass
                             else:
                                 if self.box_1_out_print==0 and i ==0:
@@ -557,16 +587,16 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     #between F and G
                     if all_boxes_position[i][1]> -19.5 and all_boxes_position[i][1]<=14.27 :
                         if all_boxes_position[i][1]<=14.27 and all_boxes_position[i][1]>9.85:
-                            upper_border=(-0.02363*(all_boxes_position[i][1]**2))+(-0.2147*all_boxes_position[i][1])+(51.35)
-                            lower_border=(-1.367*(all_boxes_position[i][1]**2))+(32.07*all_boxes_position[i][1])+(-152.6)
+                            upper_border_box=(-0.02363*(all_boxes_position[i][1]**2))+(-0.2147*all_boxes_position[i][1])+(51.35)
+                            lower_border_box=(-1.367*(all_boxes_position[i][1]**2))+(32.07*all_boxes_position[i][1])+(-152.6)
                         else:
                             if all_boxes_position[i][1]<=9.85 and all_boxes_position[i][1]>-16.0:
-                                upper_border=(-0.02353*(all_boxes_position[i][1]**2))+(-0.2124*all_boxes_position[i][1])+(51.36)
-                                lower_border=(-0.0598*(all_boxes_position[i][1]**2))+(-0.6872*all_boxes_position[i][1])+(43.19)
+                                upper_border_box=(-0.02353*(all_boxes_position[i][1]**2))+(-0.2124*all_boxes_position[i][1])+(51.36)
+                                lower_border_box=(-0.0598*(all_boxes_position[i][1]**2))+(-0.6872*all_boxes_position[i][1])+(43.19)
                             elif all_boxes_position[i][1]<=-16.0 and all_boxes_position[i][1]>-19.5:
-                                upper_border=(0.04529*(all_boxes_position[i][1]**2))+(+2.346*all_boxes_position[i][1])+(74.96)
-                                lower_border=(-0.1548*(all_boxes_position[i][1]**2))+(-4.205*all_boxes_position[i][1])+(12.68)
-                        if lower_border<all_boxes_position[i][0] and upper_border>all_boxes_position[i][0]:
+                                upper_border_box=(0.04529*(all_boxes_position[i][1]**2))+(+2.346*all_boxes_position[i][1])+(74.96)
+                                lower_border_box=(-0.1548*(all_boxes_position[i][1]**2))+(-4.205*all_boxes_position[i][1])+(12.68)
+                        if lower_border_box<all_boxes_position[i][0] and upper_border_box>all_boxes_position[i][0]:
                             pass
                         else:
                             if self.box_1_out_print==0 and i ==0:
@@ -588,11 +618,11 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     #between G and H
                     if all_boxes_position[i][1]>-29.3 and all_boxes_position[i][1]<=-19.5 :
                         if all_boxes_position[i][0]>=27.4:
-                            upper_border=(-0.1004*(all_boxes_position[i][1]**2))+(-3.362*all_boxes_position[i][1])+(19.20)
-                            lower_border=(-0.5255*(all_boxes_position[i][1]**2))+(-19.38*all_boxes_position[i][1])+(-141.8)
-                            if lower_border<27.4:
-                                lower_border=27.4
-                            if lower_border<all_boxes_position[i][0] and upper_border>all_boxes_position[i][0]:
+                            upper_border_box=(-0.1004*(all_boxes_position[i][1]**2))+(-3.362*all_boxes_position[i][1])+(19.20)
+                            lower_border_box=(-0.5255*(all_boxes_position[i][1]**2))+(-19.38*all_boxes_position[i][1])+(-141.8)
+                            if lower_border_box<27.4:
+                                lower_border_box=27.4
+                            if lower_border_box<all_boxes_position[i][0] and upper_border_box>all_boxes_position[i][0]:
                                 pass
                             else:
                                 if self.box_1_out_print==0 and i ==0:
@@ -652,8 +682,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 reward=-1.75
             if self.object_disposer_out_of_game_area==1:
                 reward=-2.0
+                print " === object disposer robot EXIT from area of the game ==="
             if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
                 reward=3.0
+                print " === ALL BOXES OUT OF LINES ! ==="
             
 
             
@@ -668,7 +700,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
               
         else:
             if self.object_disposer_out_of_line==1:
-                reward=-0.1
+                reward=-0.001
             
             if self.box_1_reward==0 and self.box_1_out==1:
                 reward=reward+1.5
@@ -681,7 +713,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 self.box_3_reward=1 
             if self.box_4_reward==0 and self.box_4_out==1:
                 reward=reward+1.5
-                self.box_4_reward=1    
+                self.box_4_reward=1 
+            #if self.object_disposer_returned_to_lines_reward==1:
+             #   reward=reward+1
+              #  self.object_disposer_returned_to_lines_reward=0   
                 
             #negative reward from collection box moment until box out of lines.
             #if self.box_collected_flag == 1 and self.box_collected_reward_given==1:
