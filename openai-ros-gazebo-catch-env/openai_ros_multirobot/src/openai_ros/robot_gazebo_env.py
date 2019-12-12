@@ -163,7 +163,7 @@ class RobotGazeboEnv(gym.Env):
             object_box_y = np.random.uniform(low=15.0, high=20.0)
             object_box_theta = np.random.uniform(low=0.0, high=2*np.pi)
             object_box_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
-            object_box_pose   =   Pose(Point(x=object_box_x, y=object_box_y,    z=0.15),   object_box_orient)
+            object_box_pose   =   Pose(Point(x=object_box_x, y=object_box_y,    z=0.0),   object_box_orient)
             object_box_model = ModelState()
             object_box_model.model_name = "object_box"
             object_box_model.pose = object_box_pose
@@ -180,7 +180,7 @@ class RobotGazeboEnv(gym.Env):
             object_box_2_y = np.random.uniform(low=15.0, high=20.0)
             object_box_2_theta = np.random.uniform(low=0.0, high=2*np.pi)
             object_box_2_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
-            object_box_2_pose   =   Pose(Point(x=object_box_2_x, y=object_box_2_y,    z=0.15),   object_box_2_orient)
+            object_box_2_pose   =   Pose(Point(x=object_box_2_x, y=object_box_2_y,    z=0.0),   object_box_2_orient)
             object_box_2_model = ModelState()
             object_box_2_model.model_name = "object_box_2"
             object_box_2_model.pose = object_box_2_pose
@@ -196,7 +196,7 @@ class RobotGazeboEnv(gym.Env):
             object_box_3_y = np.random.uniform(low=15.0, high=20.0)
             object_box_3_theta = np.random.uniform(low=0.0, high=2*np.pi)
             object_box_3_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
-            object_box_3_pose   =   Pose(Point(x=object_box_3_x, y=object_box_3_y,    z=0.15),   object_box_3_orient)
+            object_box_3_pose   =   Pose(Point(x=object_box_3_x, y=object_box_3_y,    z=0.0),   object_box_3_orient)
             object_box_3_model = ModelState()
             object_box_3_model.model_name = "object_box_3"
             object_box_3_model.pose = object_box_3_pose
@@ -211,7 +211,7 @@ class RobotGazeboEnv(gym.Env):
             object_box_4_y = np.random.uniform(low=15.0, high=20.0)
             object_box_4_theta = np.random.uniform(low=0.0, high=2*np.pi)
             object_box_4_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,0))
-            object_box_4_pose   =   Pose(Point(x=object_box_4_x, y=object_box_4_y,    z=0.15),   object_box_4_orient)
+            object_box_4_pose   =   Pose(Point(x=object_box_4_x, y=object_box_4_y,    z=0.0),   object_box_4_orient)
             object_box_4_model = ModelState()
             object_box_4_model.model_name = "object_box_4"
             object_box_4_model.pose = object_box_4_pose

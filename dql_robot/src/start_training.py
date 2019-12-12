@@ -19,7 +19,7 @@ from std_msgs.msg import Int16
 import matplotlib.pyplot as plt
 
 MAX_EXPERIENCE = 50000
-MIN_EXPERIENCE = 5000 #was 500 and before 5000
+MIN_EXPERIENCE = 500 #was 500 and before 5000
 TARGET_UPDATE_PERIOD = 50000
 IM_SIZE = 84
 LASER_SIZE = 720
@@ -27,6 +27,7 @@ LASER_MIN = 0.1
 LASER_MAX = 10
 K = 4
 n_history = 4
+
 
 def smooth(x):
     n = len(x)
@@ -174,8 +175,8 @@ if __name__ == '__main__':
     skip_intervel = 50
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
-    #epsilon_change = (epsilon - epsilon_min) / 100000
-    epsilon_change = (epsilon - epsilon_min) / 150000
+    #epsilon_change = (epsilon - epsilon_min) / 100000 150000
+    epsilon_change = (epsilon - epsilon_min) / 300000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
