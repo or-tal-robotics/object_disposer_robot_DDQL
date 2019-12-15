@@ -92,7 +92,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.object_disposer_out_without_box=rospy.get_param("/turtlebot2/object_disposer_out_without_box")
 
 
-        self.cumulated_steps = 0.0
+        self.cumulated_steps = 0 #number of steps now.
+        self.max_steps = rospy.get_param('/turtlebot2/max_steps_episode') #max possible number of steps
         
         
         self.predator_win = 0
@@ -118,6 +119,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.box_2_out_print=0
         self.box_3_out_print=0
         self.box_4_out_print=0
+
+        self.steps_flag=0
 
         #flag if reward is given
         self.box_1_reward=0
@@ -167,7 +170,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
         elif action == 3: #BACK
-            linear_speed =-3.8
+            linear_speed =-2.8
             self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
@@ -179,6 +182,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #     self.last_action = "FORWARDS_TURN_LEFT"
         self.move_base(linear_speed, angular_speed, epsilon=0.05, update_rate=10)  
         time.sleep(0.1) #0.005
+        self.cumulated_steps=self.cumulated_steps+1
 
     def _get_obs(self):
         """
@@ -463,15 +467,20 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         self.box_1_out=1
                         self.box_1_out_print=1
                         self.box_1=1
-                    elif self.box_2_out_print==0 and i ==1 and j==i :
+                        
+                        
+                    
+                    if self.box_2_out_print==0 and i ==1 and j==i :
                         print ("===Box number "+str(i+1)+"is OUT===")
                         self.box_2_out=1
                         self.box_2_out_print=1
-                    elif self.box_3_out_print==0 and i ==2 and j==i :
+                        
+                    if self.box_3_out_print==0 and i ==2 and j==i :
                         print ("===Box number "+str(i+1)+"is OUT===")
                         self.box_3_out=1
                         self.box_3_out_print=1
-                    elif self.box_4_out_print==0 and i ==3 and j==i :
+                        
+                    if self.box_4_out_print==0 and i ==3 and j==i :
                         print ("===Box number "+str(i+1)+"is OUT===")
                         self.box_4_out=1
                         self.box_4_out_print=1
@@ -492,6 +501,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_1_out=1
                                     self.box_1_out_print=1
+                                    
                                     
                                 if self.box_2_out_print==0 and i ==1 and j==i:
                                     print ("===Box number "+str(i+1)+"is OUT===")
@@ -523,6 +533,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_1_out=1
                                     self.box_1_out_print=1
+                                    
                                 if self.box_2_out_print==0 and i ==1 and j==i:
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_2_out=1
@@ -553,6 +564,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_1_out=1
                                     self.box_1_out_print=1
+                                    
                                 if self.box_2_out_print==0 and i ==1 and j==i:
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_2_out=1
@@ -580,6 +592,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_1_out=1
                                     self.box_1_out_print=1
+                                    
                                 if self.box_2_out_print==0 and i ==1 and j==i:
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_2_out=1
@@ -611,6 +624,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                         print ("===Box number "+str(i+1)+"is OUT===")
                                         self.box_1_out=1
                                         self.box_1_out_print=1
+                                        
                                     if self.box_2_out_print==0 and i ==1 and j==i:
                                         print ("===Box number "+str(i+1)+"is OUT===")
                                         self.box_2_out=1
@@ -637,6 +651,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_1_out=1
                                     self.box_1_out_print=1
+                                    
                                 if self.box_2_out_print==0 and i ==1 and j==i:
                                     print ("===Box number "+str(i+1)+"is OUT===")
                                     self.box_2_out=1
@@ -651,8 +666,13 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                                     self.box_4_out_print=1
                             
         self.box_1=0
-        if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
+        if self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1 and self.box_1_out==1:
             self._episode_done = True
+
+        
+
+
+        
 
 
         #===========================================================================
@@ -679,6 +699,12 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         else:
             self.object_disposer_out_of_game_area=0
 
+        #cheak if number of steps is to hight.
+        if self.cumulated_steps > self.max_steps:
+            self._episode_done = True
+            self.steps_flag=1
+        
+
 
 
 
@@ -695,6 +721,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
                 reward=self.reward+3.0
                 print " === ALL BOXES OUT OF LINES ! ==="
+            
+            if self.steps_flag==1:
+                reward=self.reward-1.0
                 
             
 
@@ -704,26 +733,35 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.box_3_out_print=0
             self.box_4_out_print=0
             self.box_1_out=0
-            self.box_2_out_print=0
-            self.box_3_out_print=0
-            self.box_4_out_print=0
+            self.box_2_out=0
+            self.box_3_out=0
+            self.box_4_out=0
+            self.box_1_reward=0
+            self.box_2_reward=0
+            self.box_3_reward=0
+            self.box_4_reward=0
+            self.steps_flag=0
+
+            
+            self.reward=0.0
+            self.cumulated_steps=0
 
               
         else:
             if self.object_disposer_out_of_line==1:
-                reward=self.reward-0.0001
+                self.reward=self.reward-0.0001
             
             if self.box_1_reward==0 and self.box_1_out==1:
-                reward=self.reward+1.0
+                self.reward=self.reward+0.75
                 self.box_1_reward=1
             if self.box_2_reward==0 and self.box_2_out==1:
-                reward=self.reward+1.0
+                self.reward=self.reward+0.75
                 self.box_2_reward=1 
             if self.box_3_reward==0 and self.box_3_out==1:
-                reward=self.reward+1.0
+                self.reward=self.reward+0.75
                 self.box_3_reward=1 
             if self.box_4_reward==0 and self.box_4_out==1:
-                reward=self.reward+1.0
+                self.reward=self.reward+0.75
                 self.box_4_reward=1 
             #if self.object_disposer_returned_to_lines_reward==1:
              #   reward=reward+1
@@ -733,7 +771,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             #if self.box_collected_flag == 1 and self.box_collected_reward_given==1:
                 #reward=-0.0001
                 #pass
-        self.reward=0.0
+        
         return reward
 
 

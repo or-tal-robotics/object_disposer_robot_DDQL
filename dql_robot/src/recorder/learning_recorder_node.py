@@ -22,7 +22,7 @@ out_gazebo = []
 #pathOut_robot2 = '/home/or/openai_ws_catch/src/gym-openai-multirobot-catch/dql_robot/video/robot2/episode'
 #pathOut_robot3 = '/home/or/openai_ws_catch/src/gym-openai-multirobot-catch/dql_robot/video/robot3/episode'
 #pathOut_prey = '/home/or/openai_ws_catch/src/gym-openai-multirobot-catch/dql_robot/video/prey/episode'
-pathOut_gazebo = '/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/video'
+pathOut_gazebo = '/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/video/'
 record_frq = 10
 
 def counter_cb(msg):
@@ -101,7 +101,7 @@ def counter_cb(msg):
 def gazebo_image_callback(msg):
     global episode_count, bridge, pathOut_gazebo, jj, out_gazebo, record_frq
     if (episode_count % record_frq) == 0:
-        img = bridge.imgmsg_to_cv2(msg,"rgb8")
+        img = bridge.imgmsg_to_cv2(msg,"bgr8")
         file_name = pathOut_gazebo+str(episode_count)+'.avi'
         if jj == 1:
             print('Start recording gazebo camera!, episode:'+str(episode_count))
