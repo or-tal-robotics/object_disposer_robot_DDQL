@@ -7,7 +7,7 @@ turtlebot2: #namespace
     linear_forward_speed: 7.7 # Spwwed for ging fowards
     linear_turn_speed: 6.5 # Lienare speed when turning
     angular_speed: 6.7 # Angular speed when turning Left or Right
-    max_steps_episode: 9000 # limitetion of number of steps.
+    max_steps_episode: 6000 # limitetion of number of steps.
 
 
     

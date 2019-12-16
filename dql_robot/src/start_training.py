@@ -175,8 +175,8 @@ if __name__ == '__main__':
     skip_intervel = 50
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
-    #epsilon_change = (epsilon - epsilon_min) / 100000 150000
-    epsilon_change = (epsilon - epsilon_min) / 300000
+    #epsilon_change = (epsilon - epsilon_min) / 100000 150000 300000
+    epsilon_change = (epsilon - epsilon_min) / 500000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(

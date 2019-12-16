@@ -170,7 +170,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
         elif action == 3: #BACK
-            linear_speed =-2.8
+            linear_speed =-2.2
             self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
@@ -724,6 +724,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             
             if self.steps_flag==1:
                 reward=self.reward-1.0
+                print " === Too Long Episode ! ==="
+
+
                 
             
 
@@ -749,19 +752,19 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
               
         else:
             if self.object_disposer_out_of_line==1:
-                self.reward=self.reward-0.0001
+                self.reward=self.reward-0.001
             
             if self.box_1_reward==0 and self.box_1_out==1:
-                self.reward=self.reward+0.75
+                self.reward=self.reward+1.0
                 self.box_1_reward=1
             if self.box_2_reward==0 and self.box_2_out==1:
-                self.reward=self.reward+0.75
+                self.reward=self.reward+1.0
                 self.box_2_reward=1 
             if self.box_3_reward==0 and self.box_3_out==1:
-                self.reward=self.reward+0.75
+                self.reward=self.reward+1.0
                 self.box_3_reward=1 
             if self.box_4_reward==0 and self.box_4_out==1:
-                self.reward=self.reward+0.75
+                self.reward=self.reward+1.0
                 self.box_4_reward=1 
             #if self.object_disposer_returned_to_lines_reward==1:
              #   reward=reward+1
