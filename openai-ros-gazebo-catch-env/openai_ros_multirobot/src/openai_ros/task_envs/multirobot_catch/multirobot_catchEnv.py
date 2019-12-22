@@ -129,6 +129,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.box_4_reward=0
         self.object_disposer_returned_to_lines_reward=0
         self.box_1=0
+        self.white_area_steps_counter=0
+        self.white_area_steps_max=100
+        self.white_area_steps_flag=0
 
         self.reward=0.0
 
@@ -170,7 +173,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
         elif action == 3: #BACK
-            linear_speed =-2.2
+            linear_speed =-1.0
             self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
@@ -486,8 +489,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         self.box_4_out_print=1
             else:
                 #zone --A--B--C--D--
-                lower_border=(-39.1)
-                upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
+                #lower_border=(-39.1)
+                #upper_border_box=(0.03718*(all_boxes_position[i][1]**2))+(0.3011*all_boxes_position[i][1])+(-62.19)-3.9
                 if all_boxes_position[i][0]<=-39.1:
                     #between A and B
                     if all_boxes_position[i][1]>14.27 and all_boxes_position[i][1]<22.5:
@@ -701,8 +704,13 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
 
         #cheak if number of steps is to hight.
         if self.cumulated_steps > self.max_steps:
-            self._episode_done = True
             self.steps_flag=1
+            self._episode_done = True
+            
+
+        if self.white_area_steps_counter>self.white_area_steps_max:
+            self.white_area_steps_flag=1
+            self._episode_done=True
         
 
 
@@ -716,7 +724,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             if self.crash ==1:
                 reward=self.reward-1.0
             if self.object_disposer_out_of_game_area==1:
-                reward=self.reward-1.0
+                reward=self.reward-2.5
                 print " === object disposer robot EXIT from area of the game ==="
             if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
                 reward=self.reward+3.0
@@ -725,6 +733,11 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             if self.steps_flag==1:
                 reward=self.reward-1.0
                 print " === Too Long Episode ! ==="
+
+            if self.white_area_steps_flag==1:
+                reward=self.reward-1.0
+                print " === Too Much Time on White area ! ==="
+
 
 
                 
@@ -743,29 +756,34 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.box_2_reward=0
             self.box_3_reward=0
             self.box_4_reward=0
-            self.steps_flag=0
+            
+            self.white_area_steps_flag=0
+            self.white_area_steps_counter=0
 
             
             self.reward=0.0
             self.cumulated_steps=0
-
+            self.steps_flag=0
               
         else:
             if self.object_disposer_out_of_line==1:
-                self.reward=self.reward-0.001
+                self.reward=self.reward-0.01
+                self.white_area_steps_counter=self.white_area_steps_counter+1
             
             if self.box_1_reward==0 and self.box_1_out==1:
-                self.reward=self.reward+1.0
+                self.reward=self.reward+1.5
                 self.box_1_reward=1
             if self.box_2_reward==0 and self.box_2_out==1:
-                self.reward=self.reward+1.0
+                self.reward=self.reward+1.5
                 self.box_2_reward=1 
             if self.box_3_reward==0 and self.box_3_out==1:
-                self.reward=self.reward+1.0
+                self.reward=self.reward+1.5
                 self.box_3_reward=1 
             if self.box_4_reward==0 and self.box_4_out==1:
-                self.reward=self.reward+1.0
-                self.box_4_reward=1 
+                self.reward=self.reward+1.5
+                self.box_4_reward=1
+
+             
             #if self.object_disposer_returned_to_lines_reward==1:
              #   reward=reward+1
               #  self.object_disposer_returned_to_lines_reward=0   

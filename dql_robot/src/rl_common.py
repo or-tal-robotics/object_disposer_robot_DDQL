@@ -1,6 +1,6 @@
 import numpy as np
 class ReplayMemory():
-    def __init__(self, size = 50000, frame_height = 84, fram_width = 84, agent_history_lenth = 4, batch_size = 32):
+    def __init__(self, size = 50000, frame_height = 256, fram_width = 256, agent_history_lenth = 4, batch_size = 32):
         self.size = size
         self.frame_height = frame_height
         self.frame_width = fram_width

@@ -263,6 +263,7 @@ class DQN_object_disposer_robot():
             Z = tf.layers.conv2d(Z, 64, [4,4], activation=tf.nn.relu)
             Z = tf.layers.max_pooling2d(Z,[2,2],2)
             Z = tf.layers.conv2d(Z, 64, [3,3], activation=tf.nn.relu)
+            Z = tf.layers.conv2d(Z, 128, [3,3], activation=tf.nn.relu)
             Z = tf.layers.max_pooling2d(Z,[2,2],2)
             Z = tf.contrib.layers.flatten(Z)
             Z = tf.layers.dense(Z, 512, activation=tf.nn.relu)

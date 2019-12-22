@@ -5,9 +5,9 @@ turtlebot2: #namespace
     speed_step: 1.0 # Time to wait in the reset phases
 
     linear_forward_speed: 7.7 # Spwwed for ging fowards
-    linear_turn_speed: 6.5 # Lienare speed when turning
-    angular_speed: 6.7 # Angular speed when turning Left or Right
-    max_steps_episode: 6000 # limitetion of number of steps.
+    linear_turn_speed: 4.5 # Lienare speed when turning
+    angular_speed: 4.7 # Angular speed when turning Left or Right
+    max_steps_episode: 1000 # limitetion of number of steps.
 
 
     
