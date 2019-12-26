@@ -17,6 +17,10 @@ from datetime import datetime
 import sys
 from std_msgs.msg import Int16
 import matplotlib.pyplot as plt
+import csv
+import pandas as pd
+import os.path
+from os import path
 
 MAX_EXPERIENCE = 50000
 MIN_EXPERIENCE = 500 #was 500 and before 5000
@@ -143,6 +147,8 @@ if __name__ == '__main__':
     print "Starting training!!!"
     
 
+    
+
     rospy.init_node('predator_prey_training_node',
                     anonymous=True, log_level=rospy.WARN)
     episode_counter_pub = rospy.Publisher('/episode_counter', Int16)
@@ -176,7 +182,7 @@ if __name__ == '__main__':
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
     #epsilon_change = (epsilon - epsilon_min) / 100000 150000 300000
-    epsilon_change = (epsilon - epsilon_min) / 300000
+    epsilon_change = (epsilon - epsilon_min) / 40000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
@@ -256,7 +262,15 @@ if __name__ == '__main__':
                 obs = env.reset()
 
         
-        print("Done! Starts Training newwww!!")     
+        print("Done! Starts Training newwww!!")
+               
+        #print "11111"
+        #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
+        with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'w') as newFile:
+            newFileWriter = csv.writer(newFile)
+            newFileWriter.writerow(['Episode', 'Reward','Epsilon','Avg Reward'])
+            
+             
         t0 = datetime.now()
         for i in range(num_episodes):
             msg_data = Int16()
@@ -292,6 +306,18 @@ if __name__ == '__main__':
             episode_rewards[i] = episode_reward
             last_100_avg.append(episode_rewards[max(0,i-100):i+1].mean())
             episode_lens[i] = num_steps_in_episode
+            
+            #i_to_csv=np.append(i,axis=0)
+            #reward_to_csv=np.append(reward,axis=0)
+            #avg_reward_to_csv=np.append(last_100_avg,axis=0)
+
+            #dict = {'episode': i_to_csv, 'reward': reward_to_csv, 'avg reward': avg_reward_to_csv}
+            #df = pd.DataFrame(dict)
+            #df.to_csv(r'\result.csv', index=False) 
+
+            
+            
+
             print("Episode:", i ,
                   "Duration:", duration,
                   "Num steps:", num_steps_in_episode,
@@ -300,8 +326,30 @@ if __name__ == '__main__':
                   "Avg Reward : "+str(last_100_avg),
                   "Epsilon:", "%.3f"%epsilon)
             sys.stdout.flush()
+
+            #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
+            with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'a') as newFile:
+                newFileWriter = csv.writer(newFile)
+                newFileWriter.writerow([i, episode_reward,epsilon,last_100_avg])
+
         print("Total duration:", datetime.now()-t0)
+
         
+        
+        
+        #if  not os.path.isfile('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv'):
+            #print "11111"
+            #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
+                #newFileWriter = csv.writer(newFile)
+                #newFileWriter.writerow(['Episode', 'Reward','epsilon'])
+                #newFileWriter.writerow([i, episode_reward,epsilon])
+        #else:
+        #print "22222"
+        #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
+            #newFileWriter = csv.writer(newFile)
+            #newFileWriter.writerow([i, episode_reward,epsilon])
+
+
         y1 = smooth(episode_rewards)
         #y2 = smooth(episode_rewards[1,:])
 

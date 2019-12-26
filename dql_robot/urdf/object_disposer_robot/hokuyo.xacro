@@ -46,14 +46,14 @@
             </scan>
             <range>
               <min>0.08</min>
-              <max>5</max>
+              <max>50</max>
               <resolution>0.01</resolution>
             </range>
           </ray>
 
           <plugin name="laser" filename="libgazebo_ros_laser.so" >
               <!--<robotNamespace></robotNamespace>-->
-            <topicName>scan</topicName>
+            <topicName>laser_scans</topicName>
             <frameName>base_laser</frameName>
           </plugin>
           <!--
