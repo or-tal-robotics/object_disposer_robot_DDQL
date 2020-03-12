@@ -8,9 +8,9 @@ from gym import wrappers
 import rospy
 import rospkg
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
-from imagetranformer import ImageTransformer
-from rl_common import ReplayMemory,ReplayMemory_multicamera, update_state,update_state_multicamera, learn, learn_multicamera
-from dqn_model import DQN_prey, DQN_predator, DQN_predator_keras, DQN_object_disposer_robot
+from imagetranformer import transform
+from rl_common import ReplayMemory, update_state, learn
+from dqn_model import DQN
 import cv2
 import tensorflow as tf
 from datetime import datetime
@@ -22,14 +22,15 @@ import pandas as pd
 import os.path
 from os import path
 
+
 MAX_EXPERIENCE = 50000
-MIN_EXPERIENCE = 500 #was 500 and before 5000
+MIN_EXPERIENCE = 2000 #was 500 and before 5000
 TARGET_UPDATE_PERIOD = 50000
-IM_SIZE = 256
+IM_SIZE = 64
 LASER_SIZE = 720
 LASER_MIN = 0.1
 LASER_MAX = 10
-K = 4
+K = 3 #4
 n_history = 4
 
 
@@ -55,18 +56,15 @@ def shuffle_models(models, target_models, experience_replay_buffer,):
 
 def play_ones(
             env,
-            sess,
             total_t,
             experience_replay_buffer_object_disposer_robot,
             object_disposer_robot_model,
             target_models_object_disposer_robot,
-            image_transformer,
             gamma,
             batch_sz,
             epsilon,
             epsilon_change,
-            epsilon_min,
-            train_indxs):
+            epsilon_min):
     
     t0 = datetime.now()
     img_obs = env.reset()
@@ -80,7 +78,11 @@ def play_ones(
     
     #state_prey_laser = np.stack([laser_obs[0]] * n_history, axis = 1)
 
-    obs_small = image_transformer.transform(img_obs, sess)
+    obs_small = transform(img_obs,  [IM_SIZE, IM_SIZE])
+    
+    #new addition 10.3.20
+    #laser_small=transform(img_obs,  [IM_SIZE, IM_SIZE])
+
     #obs_small2 = image_transformer.transform(img_obs[1][1], sess)
     state_object_disposer_robot = np.stack([obs_small] * n_history, axis = 2)
     #state_predator2 = np.stack([obs_small2] * n_history, axis = 2)
@@ -92,7 +94,7 @@ def play_ones(
     episode_reward = 0
     record = True
     done = False
-    
+    loss = 0
     while not done:
         
         if total_t % TARGET_UPDATE_PERIOD == 0:
@@ -113,7 +115,8 @@ def play_ones(
         #next_state_prey1, next_state_prey2 = update_state_multicamera(state_prey1,state_prey2, obs_small1, obs_small2)
         #experience_replay_buffer_prey.add_experience(action[0], obs_small1,obs_small2,  reward[0], done)
 
-        obs_small = image_transformer.transform(img_obs, sess)
+        obs_small = transform(img_obs,  [IM_SIZE, IM_SIZE])
+        #cv2.imwrite(rospack.get_path('dql_robot')+'/img'+str(num_steps_in_episode)+'.png',obs_small)
         #cv2.imshow('image',obs_small)
         #cv2.waitKey(0)
         
@@ -123,7 +126,7 @@ def play_ones(
 
         t0_2 = datetime.now()
 
-        loss = learn(object_disposer_robot_model, target_models_object_disposer_robot, experience_replay_buffer_object_disposer_robot, gamma, batch_sz)
+        loss += learn(object_disposer_robot_model, target_models_object_disposer_robot, experience_replay_buffer_object_disposer_robot, gamma, batch_sz)
         #    if ii == 1:
         #        loss = learn(predator_model, target_models_predator, experience_replay_buffer_predator, gamma, batch_sz)
         dt = datetime.now() - t0_2
@@ -140,7 +143,7 @@ def play_ones(
         total_t += 1
         epsilon = max(epsilon - epsilon_change, epsilon_min)
         
-    return total_t, episode_reward, (datetime.now()-t0), num_steps_in_episode, total_time_training/num_steps_in_episode, epsilon
+    return total_t, episode_reward, (datetime.now()-t0), num_steps_in_episode, total_time_training/num_steps_in_episode, epsilon , loss
 
 
 if __name__ == '__main__':
@@ -172,6 +175,7 @@ if __name__ == '__main__':
     last_time_steps = np.ndarray(0)
     gamma = rospy.get_param("/turtlebot2/gamma")
     K = rospy.get_param("/turtlebot2/n_actions")
+    
     batch_sz = 32
     num_episodes = rospy.get_param("/turtlebot2/nepisodes")
     total_t = 0
@@ -182,7 +186,7 @@ if __name__ == '__main__':
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
     #epsilon_change = (epsilon - epsilon_min) / 100000 150000 300000
-    epsilon_change = (epsilon - epsilon_min) / 40000
+    epsilon_change = (epsilon - epsilon_min) / 10000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
@@ -221,146 +225,133 @@ if __name__ == '__main__':
     #     )   
 
     experience_replay_buffer_object_disposer_robot = ReplayMemory(frame_height = IM_SIZE, fram_width=IM_SIZE,agent_history_lenth=n_history)
-    object_disposer_robot_model = DQN_object_disposer_robot(
+    object_disposer_robot_model = DQN(
         K = K,
-        scope="object_disposer_robot_model",
-        image_size=IM_SIZE,
-        n_history = n_history
+        image_size=IM_SIZE
         )
-    target_models_object_disposer_robot = DQN_object_disposer_robot(
+    target_models_object_disposer_robot = DQN(
         K = K,
-        scope="object_disposer_robot_target_model",
-        image_size=IM_SIZE,
-        n_history = n_history
+        image_size=IM_SIZE
         ) 
 
 
 
-    image_transformer = ImageTransformer(IM_SIZE)
     episode_rewards = np.zeros(num_episodes)
     episode_lens = np.zeros(num_episodes)
     obs = env.reset()
-    with tf.Session() as sess:
-        # prey_model.set_session(sess)
-        # target_models_prey.set_session(sess)
-        # predator_model.set_session(sess)
-        # target_models_predator.set_session(sess)
 
-        object_disposer_robot_model.set_session(sess)
-        target_models_object_disposer_robot.set_session(sess)
-        sess.run(tf.global_variables_initializer())
-        print("Initializing experience replay buffer...")
-        obs = env.reset()
+
+
+    print("Initializing experience replay buffer...")
+    obs = env.reset()
+    
+    for i in range(MIN_EXPERIENCE):
         
-        for i in range(MIN_EXPERIENCE):
+        action = np.random.choice(K)
+        img_obs, reward, done, _ = env.step(action)
+        obs_small = transform(img_obs, [IM_SIZE,IM_SIZE])
+        #cv2.imwrite(rospack.get_path('dql_robot')+'/img'+str(i)+'.png',obs_small)
+        experience_replay_buffer_object_disposer_robot.add_experience(action,obs_small, reward, done)
+        if done:
+            obs = env.reset()
+
+    
+    print("Done! Starts Training newwww!!")
             
-            action = np.random.choice(K)
-            img_obs, reward, done, _ = env.step(action)
-            obs_small = image_transformer.transform(img_obs, sess)
-            experience_replay_buffer_object_disposer_robot.add_experience(action,obs_small, reward, done)
-            if done:
-                obs = env.reset()
+    #print "11111"
+    #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
+    with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'w') as newFile:
+        newFileWriter = csv.writer(newFile)
+        newFileWriter.writerow(['Episode', 'Reward','Epsilon','Avg Reward'])
+        
+            
+    t0 = datetime.now()
+    for i in range(num_episodes):
+        msg_data = Int16()
+        msg_data.data = i
+        episode_counter_pub.publish(msg_data)
+
+        if i % skip_intervel == 0:
+            if train_idxs == [0]:
+                train_idxs = [1]
+            else:
+                train_idxs = [0]
+
+    
+
+        total_t, episode_reward, duration, num_steps_in_episode, time_per_step, epsilon, loss = play_ones(
+                env,
+                total_t,
+                experience_replay_buffer_object_disposer_robot,
+                object_disposer_robot_model,
+                target_models_object_disposer_robot,
+                gamma,
+                batch_sz,
+                epsilon,
+                epsilon_change,
+                epsilon_min)
+        last_100_avg = []
+        
+        # episode_rewards[ii,i] = episode_reward[ii]
+        # last_100_avg.append(episode_rewards[ii,max(0,i-100):i+1].mean())
+        episode_rewards[i] = episode_reward
+        last_100_avg.append(episode_rewards[max(0,i-100):i+1].mean())
+        episode_lens[i] = num_steps_in_episode
+        
+        #i_to_csv=np.append(i,axis=0)
+        #reward_to_csv=np.append(reward,axis=0)
+        #avg_reward_to_csv=np.append(last_100_avg,axis=0)
+
+        #dict = {'episode': i_to_csv, 'reward': reward_to_csv, 'avg reward': avg_reward_to_csv}
+        #df = pd.DataFrame(dict)
+        #df.to_csv(r'\result.csv', index=False) 
 
         
-        print("Done! Starts Training newwww!!")
-               
+        
+
+        print("Episode:", i ,
+                "Duration:", duration,
+                "Num steps:", num_steps_in_episode,
+                "Reward:", episode_reward,
+                "Training time per step:", "%.3f" %time_per_step,
+                "Avg Reward : "+str(last_100_avg),
+                "Epsilon:", "%.3f"%epsilon)
+        sys.stdout.flush()
+
+        #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
+        with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'a') as newFile:
+            newFileWriter = csv.writer(newFile)
+            newFileWriter.writerow([i, episode_reward,epsilon,last_100_avg])
+
+    print("Total duration:", datetime.now()-t0)
+
+    
+    
+    
+    #if  not os.path.isfile('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv'):
         #print "11111"
         #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
-        with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'w') as newFile:
-            newFileWriter = csv.writer(newFile)
-            newFileWriter.writerow(['Episode', 'Reward','Epsilon','Avg Reward'])
-            
-             
-        t0 = datetime.now()
-        for i in range(num_episodes):
-            msg_data = Int16()
-            msg_data.data = i
-            episode_counter_pub.publish(msg_data)
-
-            if i % skip_intervel == 0:
-                if train_idxs == [0]:
-                    train_idxs = [1]
-                else:
-                    train_idxs = [0]
-
-        
-
-            total_t, episode_reward, duration, num_steps_in_episode, time_per_step, epsilon = play_ones(
-                    env,
-                    sess,
-                    total_t,
-                    experience_replay_buffer_object_disposer_robot,
-                    object_disposer_robot_model,
-                    target_models_object_disposer_robot,
-                    image_transformer,
-                    gamma,
-                    batch_sz,
-                    epsilon,
-                    epsilon_change,
-                    epsilon_min,
-                    train_idxs)
-            last_100_avg = []
-            
-            # episode_rewards[ii,i] = episode_reward[ii]
-            # last_100_avg.append(episode_rewards[ii,max(0,i-100):i+1].mean())
-            episode_rewards[i] = episode_reward
-            last_100_avg.append(episode_rewards[max(0,i-100):i+1].mean())
-            episode_lens[i] = num_steps_in_episode
-            
-            #i_to_csv=np.append(i,axis=0)
-            #reward_to_csv=np.append(reward,axis=0)
-            #avg_reward_to_csv=np.append(last_100_avg,axis=0)
-
-            #dict = {'episode': i_to_csv, 'reward': reward_to_csv, 'avg reward': avg_reward_to_csv}
-            #df = pd.DataFrame(dict)
-            #df.to_csv(r'\result.csv', index=False) 
-
-            
-            
-
-            print("Episode:", i ,
-                  "Duration:", duration,
-                  "Num steps:", num_steps_in_episode,
-                  "Reward:", episode_reward,
-                  "Training time per step:", "%.3f" %time_per_step,
-                  "Avg Reward : "+str(last_100_avg),
-                  "Epsilon:", "%.3f"%epsilon)
-            sys.stdout.flush()
-
-            #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
-            with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'a') as newFile:
-                newFileWriter = csv.writer(newFile)
-                newFileWriter.writerow([i, episode_reward,epsilon,last_100_avg])
-
-        print("Total duration:", datetime.now()-t0)
-
-        
-        
-        
-        #if  not os.path.isfile('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv'):
-            #print "11111"
-            #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
-                #newFileWriter = csv.writer(newFile)
-                #newFileWriter.writerow(['Episode', 'Reward','epsilon'])
-                #newFileWriter.writerow([i, episode_reward,epsilon])
-        #else:
-        #print "22222"
-        #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
             #newFileWriter = csv.writer(newFile)
+            #newFileWriter.writerow(['Episode', 'Reward','epsilon'])
             #newFileWriter.writerow([i, episode_reward,epsilon])
+    #else:
+    #print "22222"
+    #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'a') as newFile:
+        #newFileWriter = csv.writer(newFile)
+        #newFileWriter.writerow([i, episode_reward,epsilon])
 
 
-        y1 = smooth(episode_rewards)
-        #y2 = smooth(episode_rewards[1,:])
+    y1 = smooth(episode_rewards)
+    #y2 = smooth(episode_rewards[1,:])
 
-        plt.plot(y1, label='object_disposer_robot')
-        #plt.plot(y2, label='predator')
+    plt.plot(y1, label='object_disposer_robot')
+    #plt.plot(y2, label='predator')
 
-        plt.xlabel("Episodes")
-        plt.ylabel("Reward")
-        plt.legend()
-        plt.show()
-        env.close()    
+    plt.xlabel("Episodes")
+    plt.ylabel("Reward")
+    plt.legend()
+    plt.show()
+    env.close()    
 
 
 

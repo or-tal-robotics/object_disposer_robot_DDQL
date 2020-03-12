@@ -14,7 +14,67 @@ from gazebo_msgs.msg import ModelStates
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 from sensor_msgs.msg import Image
+import matplotlib.pyplot as plt
 
+#parameters for map building.
+MIN_RANGE=1
+MAX_RANGE=50
+MIN_ANGLE=-1.570796
+NUM_OF_MEASURMENTS=720
+MAP_SIZE_EDITION=10
+IMAGE_SIZE=100
+
+X_grid=50
+Y_grid=100
+
+def get_line(start, end):
+        """Bresenham's Line Algorithm
+        Produces a list of tuples from start and end
+        """
+        # Setup initial conditions
+        x1, y1 = start
+        x2, y2 = end
+        dx = x2 - x1
+        dy = y2 - y1
+    
+        # Determine how steep the line is
+        is_steep = abs(dy) > abs(dx)
+    
+        # Rotate line
+        if is_steep:
+            x1, y1 = y1, x1
+            x2, y2 = y2, x2
+    
+        # Swap start and end points if necessary and store swap state
+        swapped = False
+        if x1 > x2:
+            x1, x2 = x2, x1
+            y1, y2 = y2, y1
+            swapped = True
+    
+        # Recalculate differentials
+        dx = x2 - x1
+        dy = y2 - y1
+    
+        # Calculate error
+        error = int(dx / 2.0)
+        ystep = 1 if y1 < y2 else -1
+    
+        # Iterate over bounding box generating points between start and end
+        y = y1
+        points = []
+        for x in range(x1, x2 + 1):
+            coord = (y, x) if is_steep else (x, y)
+            points.append(coord)
+            error -= abs(dy)
+            if error < 0:
+                y += ystep
+                error += dx
+    
+        # Reverse the list if the coordinates were swapped
+        if swapped:
+            points.reverse()
+        return points
 
 class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
     """Superclass for all CubeSingleDisk environments.
@@ -70,9 +130,13 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         
         #subscribe to front camera of line follower robot
         rospy.Subscriber("/line_follower_car/front_camera/image_raw",Image,self._camera_rgb_image_raw_callback_line_follower_car)
-        #subscribe to front camera of object disposer robot
+        
+        #subscribe to front and top camera of object disposer robot
         rospy.Subscriber("/object_disposer_robot/front_camera/image_raw",Image, self._camera_rgb_image_raw_callback_object_disposer_car)
         rospy.Subscriber("/object_disposer_robot/top_camera/image_raw",Image, self._camera_rgb_image_raw_callback_object_disposer_car_top_camera)
+        
+        #subscribe to laser scanner of object disposer robot
+        rospy.Subscriber("/object_disposer_robot/scan", LaserScan, self._clbk_laser_object_disposer_robot, queue_size=1)
                 
         #publuish speed to line follower robot
         self._cmd_vel_pub_line_follower_car=rospy.Publisher('/line_follower_car/cmd_vel_car',
@@ -200,6 +264,96 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
 
     #def _LaserScan_callback_predator(self, data):
      #   self.LaserScan_predator = data.ranges
+    
+    
+    
+    #laser scans data from object disposer robot,
+    #it converts from laser scans to occupancy grid image.
+    def _clbk_laser_object_disposer_robot(self,data):
+        #print (data.ranges)
+        angle=np.zeros(NUM_OF_MEASURMENTS)
+        angle[0]=MIN_ANGLE
+        radius=np.zeros(NUM_OF_MEASURMENTS)
+        for i in range(1,NUM_OF_MEASURMENTS):
+            angle[i]=angle[i-1]+data.angle_increment
+
+        for i in range(0,NUM_OF_MEASURMENTS):
+            if data.ranges[i]<=MAX_RANGE:
+                radius[i]=data.ranges[i]
+            else:
+                radius[i]=0
+
+        
+        #print(radius)
+        x=np.zeros(NUM_OF_MEASURMENTS)
+        y=np.zeros(NUM_OF_MEASURMENTS)
+
+        for i in range(0,NUM_OF_MEASURMENTS):
+            x[i]=radius[i]*np.cos(angle[i])
+            y[i]=radius[i]*np.sin(angle[i])
+        coordinate_matrix=np.zeros((MAX_RANGE,MAX_RANGE*2))
+        x_round=np.rint(x)
+        y_round=np.rint(y)
+        coordinate_matrix[0,MAX_RANGE]=1000 #set robot location on map
+
+        #set the location of the objects and the serounding area on map
+        for i in range(0,NUM_OF_MEASURMENTS):
+            if not (x[i]==0 and y[i]==0) and int(x_round[i])+2<MAX_RANGE and int(y_round[i])+2<MAX_RANGE*2:
+                if y[i]>=0:
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=2500
+                else:
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=2500
+
+                if int(x_round[i])-1>=0:
+                    coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i])]=2000
+                    if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
+                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]-1)]=2000
+                    if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
+                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]+1)]=2000
+
+                if int(x_round[i])+1<MAX_RANGE and int(y_round[i])+1<MAX_RANGE*2:
+                    coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i])]=2000
+                    if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
+                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]-1)]=2000
+                    if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
+                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]+1)]=2000
+
+                if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]-1)]=2000
+                if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]+1)]=2000
+
+        t=0
+        points_to_object=[]
+        point_to_maybe=[]
+        for i in range (0,MAX_RANGE):
+            for j in range(0,MAX_RANGE*2):
+                if coordinate_matrix[i,j]==2500 : 
+                    points_to_object= get_line((i,j),(0,MAX_RANGE))
+                    for xx in range(0,MAX_RANGE-1):
+                        for yy in range(0,MAX_RANGE*2-1):
+                            t=0
+                            while points_to_object[t][0] :
+                                if points_to_object[t][0]==xx and points_to_object[t][1]==yy :
+                                    if coordinate_matrix[xx,yy]!=2000:
+                                        coordinate_matrix[xx,yy]=1500
+                                    if coordinate_matrix[xx,yy+1]!=2000:
+                                        coordinate_matrix[xx,yy+1]=1500
+                                    if coordinate_matrix[xx,yy-1]!=2000:
+                                        coordinate_matrix[xx,yy-1]=1500
+                                t=t+1
+
+        self.coordinate_matrix=coordinate_matrix
+        
+        plt.imshow(coordinate_matrix,cmap='jet')
+        plt.draw()
+        plt.pause(0.0000000000000000000000000000001)
+        plt.cla()
+
+
+
+
+
 
         
     def _check_publishers_connection(self):
@@ -265,6 +419,10 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
 
     def get_camera_rgb_image_raw_top_camera(self):
         return self.camera_rgb_image_raw_object_disposer_car_top_camera
+
+    #new addition 10.3.20
+    def get_laser_image(self):
+        return self.coordinate_matrix
 
             
 

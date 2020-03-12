@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 import tensorflow as tf
+import cv2   
+    
 
+def transform(state, size):
+    state = tf.image.rgb_to_grayscale(state)
+    output = tf.image.resize(state, size, method=tf.image.ResizeMethod.NEAREST_NEIGHBOR )
+    output = tf.squeeze(output)
+    return output.numpy()
 
-class ImageTransformer():
-    def __init__(self, image_size):
-        with tf.variable_scope("image_transformer", reuse=tf.AUTO_REUSE):
-            self.input_state = tf.placeholder(shape = [480,640,3], dtype=tf.uint8)
-            self.output = tf.image.rgb_to_grayscale(self.input_state)
-            self.output = tf.image.resize_images(self.output, [image_size, image_size], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
-            self.output = tf.squeeze(self.output)
-            
-    def transform(self, state, sess = None):
-        sess = sess or tf.get_default_session()
-        return sess.run(self.output, feed_dict = {self.input_state: state})
+if __name__ == "__main__":
+    test_img = cv2.imread("test_transformer.jpg")
+    output = transform(test_img, size= [500,500])
+    cv2.imshow("img_test", output)

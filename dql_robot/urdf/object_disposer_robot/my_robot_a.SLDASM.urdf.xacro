@@ -79,7 +79,7 @@
         xyz="0 0 0.13"
         rpy="0 pi 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.12"/>
+    <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -96,8 +96,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="left_front_r">
+  <link name="left_front_r">
     <inertial>
       <origin
         xyz="-3.33066907387547E-16 2.77555756156289E-17 0.112077014459711"
@@ -131,7 +130,7 @@
         xyz="0 0 0.13"
         rpy="0 0 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.25"/>
+    <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -164,6 +163,7 @@
         iyz="-2.1254645438188E-17"
         izz="0.0660416392695462" />
     </inertial>
+    
     <visual>
       <origin
         xyz="0 0 0"
@@ -183,7 +183,7 @@
         xyz="0 0 0.13"
         rpy="0 pi 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.12"/>
+        <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -235,7 +235,7 @@
         xyz="0 0 0.13"
         rpy="0 0 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.25"/>
+    <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -287,7 +287,7 @@
         xyz="0 0 0.13"
         rpy="0 pi 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.12"/>
+        <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -339,7 +339,7 @@
         xyz="0 0 -0.13"
         rpy="0 0 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.25"/>
+    <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -391,7 +391,7 @@
         xyz="0 0 -0.13"
         rpy="0 pi 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.12"/>
+        <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -440,10 +440,10 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 -0.13"
+        xyz="0 -0.011 -0.13"
         rpy="0 0 0" />
       <geometry>
-    <cylinder length="0.3" radius="0.25"/>
+    <cylinder length="0.1" radius="0.25"/>
     </geometry>
     </collision>
   </link>
@@ -482,6 +482,7 @@
   </gazebo>
 
   <gazebo reference="right_back">
+    
     <material>Gazebo/ZincYellow  </material>
   </gazebo>
 
@@ -497,15 +498,32 @@
     <material>Gazebo/ZincYellow  </material>
   </gazebo>
 
-<gazebo reference="lf"/>
-<gazebo reference="rf"/>
-<gazebo reference="lb"/>
-<gazebo reference="rv"/>
+<gazebo reference="lf">
+  <mu1>1.7</mu1>
+  <mu2>0.7</mu2>
+
+</gazebo>
+<gazebo reference="rf">
+  <mu1>1.7</mu1>
+  <mu2>0.7</mu2>
+
+</gazebo>
+<gazebo reference="lb">
+  <mu1>1.7</mu1>
+  <mu2>0.7</mu2>
+
+</gazebo>
+<gazebo reference="rv">
+  <mu1>1.7</mu1>
+  <mu2>0.7</mu2>
+
+</gazebo>
+
 
 <gazebo>
   <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-    <updateRate>100.0</updateRate>
-    <!--<robotNamespace>/</robotNamespace>-->
+    <updateRate>50.0</updateRate>
+    
     <leftFrontJoint>lf</leftFrontJoint>
     <rightFrontJoint>rf</rightFrontJoint>
     <leftRearJoint>lb</leftRearJoint>
@@ -519,7 +537,8 @@
     <broadcastTF>false</broadcastTF>
   </plugin>
 </gazebo>
- 
+
+
 
   <link name="camera_link1">
     <collision>
@@ -664,7 +683,7 @@
 
    <joint name="hokuyo_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz="-1.1 0 0.20" rpy="0 0 3.1415"/>
+    <origin xyz="-1.2 0 0.25" rpy="0 0 3.1415"/>
     <parent link="base_link"/>
     <child link="hokuyo_link"/>
   </joint>
@@ -696,7 +715,7 @@
    <!-- <sensor type="gpu_ray" name="head_hokuyo_sensor">-->
    <sensor type="ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
+      <visualize>False</visualize>
       <update_rate>100</update_rate>
       <ray>
         <scan>
@@ -709,7 +728,7 @@
         </scan>
         <range>
           <min>0.1</min>
-          <max>50.0</max>
+          <max>52.0</max>
           <resolution>0.1</resolution>
         </range>
         <noise>
