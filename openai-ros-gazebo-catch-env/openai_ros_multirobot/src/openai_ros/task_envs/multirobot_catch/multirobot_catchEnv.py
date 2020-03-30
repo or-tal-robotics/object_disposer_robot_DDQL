@@ -54,7 +54,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         
         # We set the reward range, which is not compulsory but here we do it.
         self.reward_range = (-np.inf, np.inf)
-        
+        self.coordinate_matrix=np.zeros((64,64))
         
         
         # Actions and Observations
@@ -200,7 +200,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         """
         rospy.logdebug("Start Get Observation ==>")
         #observations from camera
-        img_observations = self.get_camera_rgb_image_raw()
+        img_observations = self.get_camera_rgb_image_raw_top_camera()
 
         #new addition 10.3.20
         #observations from laser scanner
@@ -209,7 +209,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #laser_observations = [self.LaserScan_prey, self.LaserScan_predator]
         rospy.logdebug("END Get Observation ==>")
         #new addition 10.3.20
-        return img_observations
+        return [img_observations,laser_observations]
 
 
 
@@ -872,7 +872,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 self.box_4_reward=1
             
             if self.reward_for_back_to_lines==1:
-                reward=0.5
+                reward=0.85
                 self.flag_box_out=0
                 self.reward_for_back_to_lines=0
                 print " === Reward for back to lines ! ==="

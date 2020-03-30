@@ -16,6 +16,9 @@ import cv2
 from sensor_msgs.msg import Image
 import matplotlib.pyplot as plt
 
+from skimage import transform as tf
+
+
 #parameters for map building.
 MIN_RANGE=1
 MAX_RANGE=50
@@ -23,6 +26,11 @@ MIN_ANGLE=-1.570796
 NUM_OF_MEASURMENTS=720
 MAP_SIZE_EDITION=10
 IMAGE_SIZE=100
+
+OBJ_COLOR=2500 #2500
+OBJ_SEROUND_COLOR=2000 #2000
+PASS_COLOR=1500 #1000
+RANGE_COLOR=500 #1100
 
 X_grid=50
 Y_grid=100
@@ -281,74 +289,120 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
             if data.ranges[i]<=MAX_RANGE:
                 radius[i]=data.ranges[i]
             else:
-                radius[i]=0
+                radius[i]=MAX_RANGE-1
+                #radius[i]=0
 
         
         #print(radius)
         x=np.zeros(NUM_OF_MEASURMENTS)
         y=np.zeros(NUM_OF_MEASURMENTS)
+        #check if it measurment or max range value 1-max range  0-measurment
+        x_max_range=np.zeros(NUM_OF_MEASURMENTS)
+        y_max_range=np.zeros(NUM_OF_MEASURMENTS)
 
         for i in range(0,NUM_OF_MEASURMENTS):
+            if radius[i]==MAX_RANGE-1:
+                x_max_range[i]=1
+                y_max_range[i]=1
+            
             x[i]=radius[i]*np.cos(angle[i])
             y[i]=radius[i]*np.sin(angle[i])
+        #coordinate_matrix=np.zeros((MAX_RANGE,MAX_RANGE*2))
         coordinate_matrix=np.zeros((MAX_RANGE,MAX_RANGE*2))
         x_round=np.rint(x)
         y_round=np.rint(y)
+
+        for i in range (0,MAX_RANGE):
+            for j in range(0,MAX_RANGE*2):
+                a=np.array((i ,j, 0))
+                b=np.array((0 ,MAX_RANGE, 0))
+                if np.linalg.norm(a-b)<MAX_RANGE :
+                    coordinate_matrix[i,j]=RANGE_COLOR 
+
+
         coordinate_matrix[0,MAX_RANGE]=1000 #set robot location on map
 
         #set the location of the objects and the serounding area on map
         for i in range(0,NUM_OF_MEASURMENTS):
-            if not (x[i]==0 and y[i]==0) and int(x_round[i])+2<MAX_RANGE and int(y_round[i])+2<MAX_RANGE*2:
+            
+            #if (not (x[i]==0 and y[i]==0) and int(x_round[i])+2<MAX_RANGE and int(y_round[i])+2<MAX_RANGE*2) and x_max_range[i]==0 and y_max_range[i]==0 :
+            if (not (x[i]==0 and y[i]==0) and int(x_round[i])+2<MAX_RANGE and int(y_round[i])+2<MAX_RANGE*2) and x_max_range[i]==0 and y_max_range[i]==0 :
                 if y[i]>=0:
-                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=2500
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=OBJ_COLOR
                 else:
-                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=2500
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=OBJ_COLOR
 
                 if int(x_round[i])-1>=0:
-                    coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i])]=2000
+                    coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i])]=OBJ_SEROUND_COLOR
                     if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
-                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]-1)]=2000
+                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]-1)]=OBJ_SEROUND_COLOR
                     if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
-                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]+1)]=2000
+                        coordinate_matrix[int(x_round[i]-1),int(MAX_RANGE+y_round[i]+1)]=OBJ_SEROUND_COLOR
 
                 if int(x_round[i])+1<MAX_RANGE and int(y_round[i])+1<MAX_RANGE*2:
-                    coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i])]=2000
+                    coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i])]=OBJ_SEROUND_COLOR
                     if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
-                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]-1)]=2000
+                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]-1)]=OBJ_SEROUND_COLOR
                     if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
-                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]+1)]=2000
+                        coordinate_matrix[int(x_round[i]+1),int(MAX_RANGE+y_round[i]+1)]=OBJ_SEROUND_COLOR
 
                 if int(MAX_RANGE+y_round[i])-1>=-MAX_RANGE:
-                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]-1)]=2000
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]-1)]=OBJ_SEROUND_COLOR
                 if int(MAX_RANGE+y_round[i])+1<=MAX_RANGE:
-                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]+1)]=2000
+                    coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i]+1)]=OBJ_SEROUND_COLOR
+            
+            if x_max_range[i]==1 and y_max_range[i]==1 :
+                coordinate_matrix[int(x_round[i]),int(MAX_RANGE+y_round[i])]=RANGE_COLOR
+            
+
+            
+
+        
+
+               
+                
+
+
+            
 
         t=0
         points_to_object=[]
         point_to_maybe=[]
         for i in range (0,MAX_RANGE):
             for j in range(0,MAX_RANGE*2):
-                if coordinate_matrix[i,j]==2500 : 
+                if (coordinate_matrix[i,j]==OBJ_COLOR) : 
                     points_to_object= get_line((i,j),(0,MAX_RANGE))
-                    for xx in range(0,MAX_RANGE-1):
-                        for yy in range(0,MAX_RANGE*2-1):
+                    for xx in range(1,MAX_RANGE-1):
+                        for yy in range(1,MAX_RANGE*2-1):
                             t=0
                             while points_to_object[t][0] :
                                 if points_to_object[t][0]==xx and points_to_object[t][1]==yy :
-                                    if coordinate_matrix[xx,yy]!=2000:
-                                        coordinate_matrix[xx,yy]=1500
-                                    if coordinate_matrix[xx,yy+1]!=2000:
-                                        coordinate_matrix[xx,yy+1]=1500
-                                    if coordinate_matrix[xx,yy-1]!=2000:
-                                        coordinate_matrix[xx,yy-1]=1500
+                                    if coordinate_matrix[xx,yy]!=OBJ_SEROUND_COLOR:
+                                        coordinate_matrix[xx,yy]=PASS_COLOR
+                                    if coordinate_matrix[xx,yy+1]!=OBJ_SEROUND_COLOR:
+                                        coordinate_matrix[xx,yy+1]=PASS_COLOR
+                                    if coordinate_matrix[xx,yy-1]!=OBJ_SEROUND_COLOR:
+                                        coordinate_matrix[xx,yy-1]=PASS_COLOR
                                 t=t+1
 
-        self.coordinate_matrix=coordinate_matrix
+                
+                
         
-        plt.imshow(coordinate_matrix,cmap='jet')
-        plt.draw()
-        plt.pause(0.0000000000000000000000000000001)
-        plt.cla()
+                
+                
+        
+        coordinate_matrix_resize=np.zeros((64,64))
+        
+        
+        coordinate_matrix_resize=tf.resize(coordinate_matrix,(64,64))
+        self.coordinate_matrix=coordinate_matrix_resize
+        
+        
+
+        #plt.imshow(coordinate_matrix_resize,cmap='jet')
+        #plt.draw()
+        #plt.pause(0.0000000000000000000000000000001)
+        #plt.cla()
 
 
 

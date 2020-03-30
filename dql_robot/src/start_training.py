@@ -23,8 +23,8 @@ import os.path
 from os import path
 
 
-MAX_EXPERIENCE = 50000
-MIN_EXPERIENCE = 2000 #was 500 and before 5000
+MAX_EXPERIENCE = 50000 #50000
+MIN_EXPERIENCE = 2000 #was 500 and before 5000 2000
 TARGET_UPDATE_PERIOD = 50000
 IM_SIZE = 64
 LASER_SIZE = 720
@@ -67,7 +67,11 @@ def play_ones(
             epsilon_min):
     
     t0 = datetime.now()
-    img_obs = env.reset()
+    obs = env.reset()
+    img_obs=obs[0]
+    lsr_obs=obs[1]
+
+
   
     
 
@@ -79,14 +83,18 @@ def play_ones(
     #state_prey_laser = np.stack([laser_obs[0]] * n_history, axis = 1)
 
     obs_small = transform(img_obs,  [IM_SIZE, IM_SIZE])
+    #lsr_small = transform(lsr_obs,  [IM_SIZE, IM_SIZE])
+
+
     
     #new addition 10.3.20
-    #laser_small=transform(img_obs,  [IM_SIZE, IM_SIZE])
-
-    #obs_small2 = image_transformer.transform(img_obs[1][1], sess)
+    
     state_object_disposer_robot = np.stack([obs_small] * n_history, axis = 2)
-    #state_predator2 = np.stack([obs_small2] * n_history, axis = 2)
-    #state_predator_laser = np.stack([laser_obs[1]] * n_history, axis = 1)
+    state_object_disposer_robot_lsr= np.stack([lsr_obs] * n_history, axis = 2)
+
+
+
+    
     loss = None
     
     total_time_training = 0
@@ -103,26 +111,22 @@ def play_ones(
             target_models_object_disposer_robot.copy_from(object_disposer_robot_model)
             print("model is been copied!")
         #action.append(prey_model.sample_action(state_prey1, state_prey2, epsilon))
-        action = object_disposer_robot_model.sample_action(state_object_disposer_robot, epsilon)
-        img_obs, reward, done, _ = env.step(action)
-        #img_obs = all_obs[0]
-        #laser_obs = all_obs[1]
+        action = object_disposer_robot_model.sample_action(state_object_disposer_robot,state_object_disposer_robot_lsr, epsilon)
+        obs, reward, done, _ = env.step(action)
+        img_obs = obs[0]
+        lsr_obs = obs[1]
         
         episode_reward += reward
 
-        #obs_small1 = image_transformer.transform(img_obs[0][0], sess)
-        #obs_small2 = image_transformer.transform(img_obs[0][1], sess)
-        #next_state_prey1, next_state_prey2 = update_state_multicamera(state_prey1,state_prey2, obs_small1, obs_small2)
-        #experience_replay_buffer_prey.add_experience(action[0], obs_small1,obs_small2,  reward[0], done)
+        
 
         obs_small = transform(img_obs,  [IM_SIZE, IM_SIZE])
-        #cv2.imwrite(rospack.get_path('dql_robot')+'/img'+str(num_steps_in_episode)+'.png',obs_small)
-        #cv2.imshow('image',obs_small)
-        #cv2.waitKey(0)
+        #lsr_small = transform(lsr_obs,  [IM_SIZE, IM_SIZE])
         
-        #obs_small2 = image_transformer.transform(img_obs[1][1], sess)
-        next_state_object_disposer_robot= update_state(state_object_disposer_robot, obs_small,)
-        experience_replay_buffer_object_disposer_robot.add_experience(action, obs_small, reward, done)
+        
+        
+        next_state_object_disposer_robot,next_state_object_disposer_robot_lsr= update_state(state_object_disposer_robot, obs_small,state_object_disposer_robot_lsr,lsr_obs)
+        experience_replay_buffer_object_disposer_robot.add_experience(action, obs_small,lsr_obs, reward, done)
 
         t0_2 = datetime.now()
 
@@ -134,12 +138,10 @@ def play_ones(
         total_time_training += dt.total_seconds()
         num_steps_in_episode += 1
         
-        #state_prey1 = next_state_prey1
-        #state_prey2 = next_state_prey2
-        #state_prey_laser = next_state_prey_laser
-        state_object_disposer_robot = next_state_object_disposer_robot
-        #state_predator2 = next_state_predator2
-        #state_predator_laser = next_state_predator_laser
+        
+        state_object_disposer_robot = next_state_object_disposer_robot #camera
+        state_object_disposer_robot_lsr = next_state_object_disposer_robot_lsr #laser
+        
         total_t += 1
         epsilon = max(epsilon - epsilon_change, epsilon_min)
         
@@ -147,7 +149,7 @@ def play_ones(
 
 
 if __name__ == '__main__':
-    print "Starting training!!!"
+    print("Starting training!!!")
     
 
     
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
     #epsilon_change = (epsilon - epsilon_min) / 100000 150000 300000
-    epsilon_change = (epsilon - epsilon_min) / 10000
+    epsilon_change = (epsilon - epsilon_min) / 100000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
@@ -248,10 +250,16 @@ if __name__ == '__main__':
     for i in range(MIN_EXPERIENCE):
         
         action = np.random.choice(K)
-        img_obs, reward, done, _ = env.step(action)
+        obs, reward, done, _ = env.step(action)
+        img_obs=obs[0]
+        lsr_obs=obs[1]
+
         obs_small = transform(img_obs, [IM_SIZE,IM_SIZE])
-        #cv2.imwrite(rospack.get_path('dql_robot')+'/img'+str(i)+'.png',obs_small)
-        experience_replay_buffer_object_disposer_robot.add_experience(action,obs_small, reward, done)
+        #lsr_small = transform(lsr_obs, [IM_SIZE,IM_SIZE])
+
+
+
+        experience_replay_buffer_object_disposer_robot.add_experience(action,obs_small,lsr_obs, reward, done)
         if done:
             obs = env.reset()
 

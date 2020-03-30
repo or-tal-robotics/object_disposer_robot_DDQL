@@ -132,8 +132,8 @@ class RobotGazeboEnv(gym.Env):
             object_disposer_robot_x = np.random.uniform(low=-30.4, high=20.4) 
             object_disposer_robot_y = np.random.uniform(low=15.0, high=20.0)
             object_disposer_robot_theta = np.random.uniform(low=0.0, high=2*np.pi)
-            #move_direction= [0,np.pi]
-            move_direction= [0,0]
+            move_direction= [0,np.pi]
+            #move_direction= [0,0]
             object_disposer_robot_move_direction=random.choice(move_direction)
             object_disposer_robot_orient = Quaternion(*tf.transformations.quaternion_from_euler(0,0,object_disposer_robot_move_direction))
             object_disposer_robot_pose   =   Pose(Point(x=object_disposer_robot_x, y=object_disposer_robot_y,    z=0.15),   object_disposer_robot_orient)
@@ -155,11 +155,11 @@ class RobotGazeboEnv(gym.Env):
             line_follower_car_model.reference_frame = "world"
 
             #add box (object on rode) in random position.
-            object_box_x = np.random.uniform(low=-25.4, high=object_disposer_robot_x-5)
+            object_box_x = np.random.uniform(low=-25.4, high=object_disposer_robot_x-7)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_x = np.random.uniform(low=object_disposer_robot_x+5, high=20.4)
+                object_box_x = np.random.uniform(low=object_disposer_robot_x+7, high=20.4)
 
             object_box_y = np.random.uniform(low=15.0, high=20.0)
             object_box_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -173,11 +173,11 @@ class RobotGazeboEnv(gym.Env):
 
 
             #add box (object on rode) in random position.
-            object_box_2_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-5)
+            object_box_2_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-7)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_2_x = np.random.uniform(low=object_disposer_robot_x+5, high=20.4)
+                object_box_2_x = np.random.uniform(low=object_disposer_robot_x+7, high=20.4)
 
             object_box_2_y = np.random.uniform(low=15.0, high=20.0)
             object_box_2_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -190,11 +190,11 @@ class RobotGazeboEnv(gym.Env):
             object_box_2_model.reference_frame = "world"
 
 
-            object_box_3_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-5)
+            object_box_3_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-7)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_3_x = np.random.uniform(low=object_disposer_robot_x+5, high=20.4)
+                object_box_3_x = np.random.uniform(low=object_disposer_robot_x+7, high=20.4)
 
             object_box_3_y = np.random.uniform(low=15.0, high=20.0)
             object_box_3_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -206,11 +206,11 @@ class RobotGazeboEnv(gym.Env):
             object_box_3_model.pose = object_box_3_pose
             object_box_3_model.reference_frame = "world"
 
-            object_box_4_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-5)
+            object_box_4_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-7)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_4_x = np.random.uniform(low=object_disposer_robot_x+5, high=20.4)
+                object_box_4_x = np.random.uniform(low=object_disposer_robot_x+7, high=20.4)
 
             object_box_4_y = np.random.uniform(low=15.0, high=20.0)
             object_box_4_theta = np.random.uniform(low=0.0, high=2*np.pi)
