@@ -19,6 +19,21 @@ def get_image_moment(image):
     M = cv2.moments(mask)
     return M['m00']
 
+def distance_and_angle(x_robot,y_robot,x_box,y_box):
+    dist=np.sqrt(np.power(x_robot-x_box,2)+np.power(y_robot-y_box,2))
+    vector_1=[x_robot,y_robot]
+    vector_2=[x_box,y_box]
+    #unit_vector_1 = vector_1 / np.linalg.norm(vector_1)
+    #unit_vector_2 = vector_2 / np.linalg.norm(vector_2)
+    #dot_product = np.dot(unit_vector_1, unit_vector_2)
+    #angle = np.arccos(dot_product)
+
+    cosang = np.dot(vector_1, vector_2)
+    sinang = np.linalg.norm(np.cross(vector_1, vector_2))
+    angle=np.arctan2(sinang, cosang)
+    if dist<0.82 and np.abs(angle)<(np.pi/3+0.12):
+        return True
+
 
 class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
     def __init__(self):
@@ -130,10 +145,22 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.object_disposer_returned_to_lines_reward=0
         self.box_1=0
         self.white_area_steps_counter=0
-        self.white_area_steps_max=200
+        self.white_area_steps_max=200 #200
         self.white_area_steps_flag=0
         self.flag_box_out=0
         self.reward_for_back_to_lines=0
+        self.flag_for_collect=0
+        self.flag_for_collect_reward=0
+
+        self.box_1_collected=0
+        self.box_2_collected=0
+        self.box_3_collected=0
+        self.box_4_collected=0
+
+        self.box_1_collected_reward=0
+        self.box_2_collected_reward=0
+        self.box_3_collected_reward=0
+        self.box_4_collected_reward=0
 
         self.reward=0.0
 
@@ -248,6 +275,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #cheack if robot in bounderies of yellow line in stright parts.
             if (object_disposer_position[1]> -29.3 and object_disposer_position[1]< -22.41) or (object_disposer_position[1]>14.27 and object_disposer_position[1]<21.2):
                 #print "====+++ IN  BOUNDERIES +++===="
+                
                 if self.print_in_of_lines==0:
                     print "====+++ IN  BOUNDERIES +++===="
                     self.print_in_of_lines=1
@@ -277,6 +305,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         upper_border=(0.03718*(object_disposer_position[1]**2))+(0.3011*object_disposer_position[1])+(-62.19)-3.9
                         lower_border=(-39.1)
                         if lower_border>object_disposer_position[0] and upper_border<object_disposer_position[0]:
+                            
                             if self.print_in_of_lines==0:
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
@@ -309,6 +338,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         elif object_disposer_position[1]<=-12.29 :
                             lower_border=0.153*(object_disposer_position[1]**2)+3.906*object_disposer_position[1]+(-28.94)
                     if lower_border>object_disposer_position[0] and upper_border<object_disposer_position[0]:
+                        
                         if self.print_in_of_lines==0:
                             print "====+++ IN  BOUNDERIES +++===="
                             self.print_in_of_lines=1
@@ -342,6 +372,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         upper_border=(0.03718*(object_disposer_position[1]**2))+(0.3011*object_disposer_position[1])+(-62.19)-3.9
                         lower_border=0.953*(object_disposer_position[1]**2)+35.16*object_disposer_position[1]+(275.9)
                     if lower_border>object_disposer_position[0] and upper_border<object_disposer_position[0]:
+                        
                         if self.print_in_of_lines==0:
                                 print "====+++ IN  BOUNDERIES +++===="
                                 self.print_in_of_lines=1
@@ -369,8 +400,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         upper_border=(-0.3317*(object_disposer_position[1]**2))+(10.04*object_disposer_position[1])+(-34.02)
                         lower_border=(27.4)
                         if lower_border<object_disposer_position[0] and upper_border>object_disposer_position[0]:
+                           
                             if self.print_in_of_lines==0:
                                 print "====+++ IN  BOUNDERIES +++===="
+                            
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
                                 if self.flag_box_out==1:
@@ -402,8 +435,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                             upper_border=(0.04529*(object_disposer_position[1]**2))+(+2.346*object_disposer_position[1])+(74.96)
                             lower_border=(-0.1548*(object_disposer_position[1]**2))+(-4.205*object_disposer_position[1])+(12.68)
                     if lower_border<object_disposer_position[0] and upper_border>object_disposer_position[0]:
+                        
                         if self.print_in_of_lines==0:
                             print "====+++ IN  BOUNDERIES +++===="
+                            
                             self.print_in_of_lines=1
                             self.print_out_of_lines=0
                             if self.flag_box_out==1:
@@ -430,8 +465,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                         if lower_border<27.4:
                             lower_border=27.4
                         if lower_border<object_disposer_position[0] and upper_border>object_disposer_position[0]:
+                            
                             if self.print_in_of_lines==0:
                                 print "====+++ IN  BOUNDERIES +++===="
+                                
                                 self.print_in_of_lines=1
                                 self.print_out_of_lines=0
                                 if self.flag_box_out==1:
@@ -464,11 +501,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.crash=1
             self._episode_done = True
 
-        #object disposer robot collect the box.
-        # if ((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.30))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.55) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.30))):
-        #     if self.box_collected_flag==0:
-        #         print " === object disposer robot COLLECTED the object box ==="
-        #         self.box_collected_flag=1
+        
 
         vector_object_disposert_to_object_box=[object_box_position[0]-object_disposer_position[0],object_box_position[1]-object_disposer_position[1]]
         distance_vector_object_disposert_to_object_box=math.sqrt((object_box_position[0]-object_disposer_position[0])**2+(object_box_position[1]-object_disposer_position[1])**2)
@@ -748,6 +781,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.box_1=0
         if self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1 and self.box_1_out==1:
             self._episode_done = True
+        
+        
 
         
 
@@ -760,10 +795,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #print ("orient x object dis" ,orient_x_object_disposer_robot)
         #print ("orient box object dis" ,orientation_object_disposer_box_to_x_axis)
 
-        # if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.55) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.29)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.22))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.55) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.29)) and (np.isclose(orient_y_object_disposer_robot,orientation_object_disposer_box_to_y_axis,atol=0.22)))):
-        #     if self.box_collected_flag==0:
-        #         print " === object disposer robot COLLECTED the object box ==="
-        #         self.box_collected_flag=1
+        #if (((np.isclose(object_box_position[0],object_disposer_position[0],atol=1.75) ) and (np.isclose(object_box_position[1],object_disposer_position[1],atol=0.39)) and (np.isclose(orient_x_object_disposer_robot,orientation_object_disposer_box_to_x_axis,atol=0.32))) or ((np.isclose(object_box_position[1],object_disposer_position[1],atol=1.75) ) and (np.isclose(object_box_position[0],object_disposer_position[0],atol=0.45)) and (np.isclose(orient_y_object_disposer_robot,orientation_object_disposer_box_to_y_axis,atol=0.35)))):
+            #if self.box_collected_flag==0:
+                #print " === object disposer robot COLLECTED the object box ==="
+                #self.box_collected_flag=1
 
          
                 
@@ -788,6 +823,33 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         if self.white_area_steps_counter>self.white_area_steps_max-2:
             self.white_area_steps_flag=1
             self._episode_done=True
+
+        #for i in range(300,400):
+            #if self.radius[i]<=0.5 and self.flag_for_collect==0:
+        
+        #for i in range(300,400):
+         #   if self.radius[i]<=0.5 and self.flag_for_collect==0:
+          #      for j in range(0,4):
+           #         if np.isclose(object_disposer_position[0],all_boxes_position[j][0],atol=1.0) and np.isclose(object_disposer_position[1],all_boxes_position[j][1],atol=1.0):
+            #            if (j==1 and self.box_1_out==0) or (j==2 and self.box_2_out==0) or (j==3 and self.box_3_out==0) or (j==4 and self.box_4_out==0):
+             #               print("===The robot COLLECTED a box!!===")
+              #              self.flag_for_collect=1
+        
+        for i in range(0,4):
+            if distance_and_angle(object_disposer_position[0]-0.8,object_disposer_position[1],all_boxes_position[i][0],all_boxes_position[i][1]):
+                #print ("COLLETED THE FUCKING BOX")
+                if self.box_1_out==0 and i==0 and self.box_1_collected==0:
+                    print("===Collected box 1===")
+                    self.box_1_collected=1
+                if self.box_2_out==0 and i==1 and self.box_2_collected==0:
+                    print("===Collected box 2===")
+                    self.box_2_collected=1
+                if self.box_3_out==0 and i==2 and self.box_3_collected==0:
+                    print("===Collected box 3===")
+                    self.box_3_collected=1
+                if self.box_4_out==0 and i==3 and self.box_4_collected==0:
+                    print("===Collected box 4===")
+                    self.box_4_collected=1
         
 
 
@@ -803,7 +865,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 reward=-1.0
             if self.object_disposer_out_of_game_area==1:
                 #reward=self.reward-2.5
-                reward=-1.0 #-2.5
+                reward=-1.1 #-2.5 #-1.1
                 print " === object disposer robot EXIT from area of the game ==="
             if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
                 #reward=self.reward+3.0
@@ -838,6 +900,11 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.box_2_reward=0
             self.box_3_reward=0
             self.box_4_reward=0
+
+            self.box_1_collected=0
+            self.box_2_collected=0
+            self.box_3_collected=0
+            self.box_4_collected=0
             
             self.white_area_steps_flag=0
             self.white_area_steps_counter=0
@@ -847,35 +914,69 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.cumulated_steps=0
             self.steps_flag=0
             self.reward_for_back_to_lines=0
-            self.flag_box_out=0              
+            self.flag_box_out=0 
+                         
         else:
             if self.object_disposer_out_of_line==1:
                 #self.reward=self.reward-0.01
-                reward=-0.001
+                reward=-0.001 #-0.001
                 self.white_area_steps_counter=self.white_area_steps_counter+1
             
             if self.box_1_reward==0 and self.box_1_out==1:
                 #self.reward=self.reward+2.0 #1.5
                 reward=1.0 #2.0
                 self.box_1_reward=1
+                
+                
+                    
+
             if self.box_2_reward==0 and self.box_2_out==1:
                 #self.reward=self.reward+2.0 #1.5
                 reward=1.0 #2.0
-                self.box_2_reward=1 
+                self.box_2_reward=1
+                
+                
+                    
             if self.box_3_reward==0 and self.box_3_out==1:
                 #self.reward=self.reward+2.0 #1.5
                 reward=1.0 #2.0
-                self.box_3_reward=1 
+                self.box_3_reward=1
+                
+                
+                    
             if self.box_4_reward==0 and self.box_4_out==1:
                 #self.reward=self.reward+2.0 #1.5
                 reward=1.0 #2.0
                 self.box_4_reward=1
+                
+                
+                    
             
             if self.reward_for_back_to_lines==1:
-                reward=0.85
+                reward=0.9
                 self.flag_box_out=0
                 self.reward_for_back_to_lines=0
                 print " === Reward for back to lines ! ==="
+
+            if self.box_1_collected==1 and self.box_1_collected_reward==0:
+                reward=0.2
+                self.box_1_collected_reward=1
+
+            if self.box_2_collected==1 and self.box_2_collected_reward==0:
+                reward=0.2
+                self.box_2_collected_reward=1
+
+            if self.box_3_collected==1 and self.box_3_collected_reward==0:
+                reward=0.2
+                self.box_3_collected_reward=1
+
+            if self.box_4_collected==1 and self.box_4_collected_reward==0:
+                reward=0.2
+                self.box_4_collected_reward=1
+
+            
+
+            
                 
 
             

@@ -76,12 +76,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_front.STL" />
-      </geometry>
+    <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -97,8 +96,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="left_front_r">
+  <link name="left_front_r">
     <inertial>
       <origin
         xyz="-3.33066907387547E-16 2.77555756156289E-17 0.112077014459711"
@@ -129,12 +127,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_front_r.STL" />
-      </geometry>
+    <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -166,6 +163,7 @@
         iyz="-2.1254645438188E-17"
         izz="0.0660416392695462" />
     </inertial>
+    
     <visual>
       <origin
         xyz="0 0 0"
@@ -182,12 +180,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_back.STL" />
-      </geometry>
+        <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -235,12 +232,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/left_back_r.STL" />
-      </geometry>
+    <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -288,12 +284,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_front.STL" />
-      </geometry>
+        <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -341,12 +336,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 0 -0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_front_r.STL" />
-      </geometry>
+    <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -394,12 +388,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0 -0.13"
+        rpy="0 pi 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_back.STL" />
-      </geometry>
+        <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -447,12 +440,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0 -0.011 -0.13"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://dql_robot/meshes_object_disposer_robot/right_back_r.STL" />
-      </geometry>
+    <cylinder length="0.1" radius="0.25"/>
+    </geometry>
     </collision>
   </link>
   <joint
@@ -468,8 +460,6 @@
     <axis
       xyz="0 0 1" />
   </joint>
-
-
 
   <gazebo reference="base_link">
     <material>Gazebo/SkyBlue      </material>
@@ -492,6 +482,7 @@
   </gazebo>
 
   <gazebo reference="right_back">
+    
     <material>Gazebo/ZincYellow  </material>
   </gazebo>
 
@@ -604,7 +595,7 @@
 
   <joint name="camera_joint2" type="fixed">
     <axis xyz="0 -1 0" />
-    <origin xyz="-10.0 0.0 10.0" rpy="0 1.545 3.14"/> <!--z=12-->
+    <origin xyz="-10.0 0.0 12.0" rpy="0 1.545 3.14"/>
     <parent link="base_link"/>
     <child link="camera_link2"/>
   </joint>
@@ -758,15 +749,11 @@
     </sensor>
   </gazebo>
 
-
-
-
 <!-- camera-->
 <xacro:property name="camera_link1" value="0.05" /> <!-- Size of square 'camera' box -->
 <xacro:property name="camera_link2" value="0.05" /> <!-- Size of square 'camera' box -->
 <!--laser-->
 <xacro:property name="hokuyo_link" value="0.05" />
-
 
 <!-- lazer scanner -->
 <!--

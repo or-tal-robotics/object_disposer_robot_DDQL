@@ -256,8 +256,8 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
                     cv2.circle(self.camera_rgb_image_raw_line_follower_car, (cx, cy), 20, (0,0,255), -1)
-#The proportional controller is implemented in the following four lines which
-#is reposible of linear scaling of an error to drive the control output.
+            #The proportional controller is implemented in the following four lines which
+            #is reposible of linear scaling of an error to drive the control output.
                     err = cx - w/2
                     #self.twist.linear.x = 10.0
                     #self.twist.angular.z = -float(err) / 12
@@ -291,6 +291,7 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
             else:
                 radius[i]=MAX_RANGE-1
                 #radius[i]=0
+        self.radius=radius
 
         
         #print(radius)
@@ -312,12 +313,12 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         x_round=np.rint(x)
         y_round=np.rint(y)
 
-        for i in range (0,MAX_RANGE):
-            for j in range(0,MAX_RANGE*2):
-                a=np.array((i ,j, 0))
-                b=np.array((0 ,MAX_RANGE, 0))
-                if np.linalg.norm(a-b)<MAX_RANGE :
-                    coordinate_matrix[i,j]=RANGE_COLOR 
+        #for i in range (0,MAX_RANGE):
+            #for j in range(0,MAX_RANGE*2):
+                #a=np.array((i ,j, 0))
+                #b=np.array((0 ,MAX_RANGE, 0))
+                #if np.linalg.norm(a-b)<MAX_RANGE :
+                    #coordinate_matrix[i,j]=RANGE_COLOR 
 
 
         coordinate_matrix[0,MAX_RANGE]=1000 #set robot location on map
@@ -399,6 +400,7 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         
         
 
+        
         #plt.imshow(coordinate_matrix_resize,cmap='jet')
         #plt.draw()
         #plt.pause(0.0000000000000000000000000000001)
