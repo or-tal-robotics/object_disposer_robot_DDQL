@@ -13,6 +13,12 @@ from openai_ros.openai_ros_common import ROSLauncher
 import time
 import random
 
+LOW_BORDER_ROBOT=-13.4 #-35.4 #-26.4 # -25.4
+HIGH_BORDER_ROBOT=.4 #25.4 #20.4 #17.4
+
+LOW_BORDER_BOX=-19.4 #-35.4 #-26.4
+HIGH_BORDER_BOX=2.4 #25.4 #20.4
+CONST_TOL=5    
 
 
 # https://github.com/openai/gym/blob/master/gym/core.py
@@ -38,7 +44,7 @@ class RobotGazeboEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step(self, action):
+    def step(self, action, avg_reward):
         """
         Function executed each time step.
         Here we get the action execute it in a time step and retrieve the
@@ -60,7 +66,7 @@ class RobotGazeboEnv(gym.Env):
         #self._prey_step()
         self.gazebo.pauseSim()
         obs = self._get_obs()
-        done = self._is_done(obs)
+        done = self._is_done(obs,avg_reward)
         info = {}
         reward = self._compute_reward(obs, done)
         
@@ -128,8 +134,8 @@ class RobotGazeboEnv(gym.Env):
     def _spwan(self):
             rospy.wait_for_service("gazebo/set_model_state")
             self.spawn_model = rospy.ServiceProxy("gazebo/set_model_state", SetModelState)
-
-            object_disposer_robot_x = np.random.uniform(low=-30.4, high=20.4) 
+            
+            object_disposer_robot_x = np.random.uniform(low=LOW_BORDER_ROBOT, high=HIGH_BORDER_ROBOT) 
             object_disposer_robot_y = np.random.uniform(low=15.0, high=20.0)
             object_disposer_robot_theta = np.random.uniform(low=0.0, high=2*np.pi)
             #move_direction= [0,np.pi]
@@ -155,11 +161,11 @@ class RobotGazeboEnv(gym.Env):
             line_follower_car_model.reference_frame = "world"
 
             #add box (object on rode) in random position.
-            object_box_x = np.random.uniform(low=-25.4, high=object_disposer_robot_x-6)
+            object_box_x = np.random.uniform(low=LOW_BORDER_BOX, high=object_disposer_robot_x-CONST_TOL)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_x = np.random.uniform(low=object_disposer_robot_x+6, high=21.4)
+                object_box_x = np.random.uniform(low=object_disposer_robot_x-CONST_TOL, high=HIGH_BORDER_BOX)
 
             object_box_y = np.random.uniform(low=15.0, high=20.0)
             object_box_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -173,11 +179,11 @@ class RobotGazeboEnv(gym.Env):
 
 
             #add box (object on rode) in random position.
-            object_box_2_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-6)
+            object_box_2_x = np.random.uniform(low=LOW_BORDER_BOX, high=object_disposer_robot_x-CONST_TOL)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_2_x = np.random.uniform(low=object_disposer_robot_x+6, high=21.4)
+                object_box_2_x = np.random.uniform(low=object_disposer_robot_x-CONST_TOL, high=HIGH_BORDER_BOX)
 
             object_box_2_y = np.random.uniform(low=15.0, high=20.0)
             object_box_2_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -190,11 +196,11 @@ class RobotGazeboEnv(gym.Env):
             object_box_2_model.reference_frame = "world"
 
 
-            object_box_3_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-6)
+            object_box_3_x = np.random.uniform(low=LOW_BORDER_BOX, high=object_disposer_robot_x-CONST_TOL)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_3_x = np.random.uniform(low=object_disposer_robot_x+6, high=21.4)
+                object_box_3_x = np.random.uniform(low=object_disposer_robot_x-CONST_TOL, high=HIGH_BORDER_BOX)
 
             object_box_3_y = np.random.uniform(low=15.0, high=20.0)
             object_box_3_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -206,11 +212,11 @@ class RobotGazeboEnv(gym.Env):
             object_box_3_model.pose = object_box_3_pose
             object_box_3_model.reference_frame = "world"
 
-            object_box_4_x = np.random.uniform(low=-30.4, high=object_disposer_robot_x-6)
+            object_box_4_x = np.random.uniform(low=LOW_BORDER_BOX, high=object_disposer_robot_x-CONST_TOL)
             if object_disposer_robot_move_direction==0:
                 pass
             else:
-                object_box_4_x = np.random.uniform(low=object_disposer_robot_x+6, high=21.4)
+                object_box_4_x = np.random.uniform(low=object_disposer_robot_x-CONST_TOL, high=HIGH_BORDER_BOX)
 
             object_box_4_y = np.random.uniform(low=15.0, high=20.0)
             object_box_4_theta = np.random.uniform(low=0.0, high=2*np.pi)
@@ -308,7 +314,7 @@ class RobotGazeboEnv(gym.Env):
         """
         raise NotImplementedError()
 
-    def _is_done(self, observations):
+    def _is_done(self, observations,avg_reward):
         """Indicates whether or not the episode is done ( the robot has fallen for example).
         """
         raise NotImplementedError()

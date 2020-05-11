@@ -400,8 +400,8 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         
         
 
-        
         #plt.imshow(coordinate_matrix_resize,cmap='jet')
+        #plt.imshow(coordinate_matrix,cmap='jet')
         #plt.draw()
         #plt.pause(0.0000000000000000000000000000001)
         #plt.cla()

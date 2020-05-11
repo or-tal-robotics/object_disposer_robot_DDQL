@@ -11,6 +11,11 @@ import cv2
 import time
 import math
 
+from sensor_msgs.msg import ChannelFloat32
+from std_msgs.msg import Int16
+
+episode_number = None     
+
 def get_image_moment(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     lower = np.array([0,0,0]) 
@@ -18,6 +23,10 @@ def get_image_moment(image):
     mask = cv2.inRange(hsv, lower, upper) 
     M = cv2.moments(mask)
     return M['m00']
+
+def Callback_episode(data):
+    global episode_number
+    episode_number = data.data
 
 def distance_and_angle(x_robot,y_robot,x_box,y_box):
     dist=np.sqrt(np.power(x_robot-x_box,2)+np.power(y_robot-y_box,2))
@@ -31,7 +40,7 @@ def distance_and_angle(x_robot,y_robot,x_box,y_box):
     cosang = np.dot(vector_1, vector_2)
     sinang = np.linalg.norm(np.cross(vector_1, vector_2))
     angle=np.arctan2(sinang, cosang)
-    if dist<0.82 and np.abs(angle)<(np.pi/3+0.12):
+    if dist<0.89 and np.abs(angle)<(np.pi/3+0.22):
         return True
 
 
@@ -145,7 +154,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.object_disposer_returned_to_lines_reward=0
         self.box_1=0
         self.white_area_steps_counter=0
-        self.white_area_steps_max=200 #200
+        self.white_area_steps_max=250 #200
         self.white_area_steps_flag=0
         self.flag_box_out=0
         self.reward_for_back_to_lines=0
@@ -165,6 +174,11 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         self.reward=0.0
 
         self.flag_try=0
+        #self.episode_counter=0
+        #rospy.Subscriber('/episode_counter', Int16 ,self.episode_counter)
+        
+
+        
 
     def _init_env_variables(self):
         """
@@ -204,7 +218,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             angular_speed = -self.angular_speed
             self.last_action = "TURN_RIGHT"
         elif action == 3: #BACK
-            linear_speed =-0.6
+            linear_speed =-0.4
             self.last_action = "BACK"
         # elif action == 3: #RIGHT FORWARD
         #     linear_speed = self.linear_turn_speed
@@ -215,7 +229,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #     angular_speed = self.angular_speed
         #     self.last_action = "FORWARDS_TURN_LEFT"
         self.move_base(linear_speed, angular_speed, epsilon=0.05, update_rate=10)  
-        time.sleep(0.1) #0.005
+        time.sleep(0.11) #0.005
         self.cumulated_steps=self.cumulated_steps+1
 
     def _get_obs(self):
@@ -227,7 +241,9 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         """
         rospy.logdebug("Start Get Observation ==>")
         #observations from camera
-        img_observations = self.get_camera_rgb_image_raw_top_camera()
+        #img_observations = self.get_camera_rgb_image_raw_top_camera()
+        img_observations = self.get_camera_rgb_image_raw()
+
 
         #new addition 10.3.20
         #observations from laser scanner
@@ -241,8 +257,16 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
 
 
     #reset function to simulation
-    def _is_done(self, observations):
+    def _is_done(self, observations,avg_reward):
         self._episode_done = False
+        rospy.Subscriber('/episode_counter', Int16,Callback_episode)
+        #print(episode_number)
+        #print(avg_reward)
+        if avg_reward>0 and episode_number>1000:
+            self.white_area_steps_max=800
+        else:
+            self.white_area_steps_max=250 #300
+        #print(self.white_area_steps_max)
 
         object_disposer_position = np.array(self.get_object_disposer_robot_position())
         
@@ -268,8 +292,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         #print all_boxes_position
 
 
-        object_disposer_orentation=np.array(self.get_object_box_orientation())
-
+        
+        
         #the reset application WITHOUT rewards!! keep in mind
         if object_disposer_position[0]> -39.1 and object_disposer_position[0]<27.4:
         #cheack if robot in bounderies of yellow line in stright parts.
@@ -516,8 +540,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         if orientation_object_disposer_box_to_y_axis>(np.pi/2.0):
            orientation_object_disposer_box_to_y_axis=np.absolute(orientation_object_disposer_box_to_y_axis-np.pi )
 
-        orient_x_object_disposer_robot=np.absolute(object_disposer_orentation[0])
-        orient_y_object_disposer_robot=np.absolute(object_disposer_orentation[1])
+        #orient_x_object_disposer_robot=np.absolute(object_disposer_orentation[0])
+        #orient_y_object_disposer_robot=np.absolute(object_disposer_orentation[1])
 
         #===========================================================================
         j=9
@@ -836,8 +860,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
               #              self.flag_for_collect=1
         
         for i in range(0,4):
-            if distance_and_angle(object_disposer_position[0]-0.8,object_disposer_position[1],all_boxes_position[i][0],all_boxes_position[i][1]):
-                #print ("COLLETED THE FUCKING BOX")
+            if distance_and_angle(object_disposer_position[0]-0.86,object_disposer_position[1],all_boxes_position[i][0],all_boxes_position[i][1]):
+                 #print ("COLLETED THE FUCKING BOX")
                 if self.box_1_out==0 and i==0 and self.box_1_collected==0:
                     print("===Collected box 1===")
                     self.box_1_collected=1
@@ -865,7 +889,7 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 reward=-1.0
             if self.object_disposer_out_of_game_area==1:
                 #reward=self.reward-2.5
-                reward=-1.1 #-2.5 #-1.1
+                reward=-1.0 #-2.5 #-1.1
                 print " === object disposer robot EXIT from area of the game ==="
             if self.box_1_out==1 and self.box_2_out==1 and self.box_3_out==1 and self.box_4_out==1:
                 #reward=self.reward+3.0
@@ -874,12 +898,12 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             
             if self.steps_flag==1:
                 #reward=self.reward-1.0
-                reward=-0.5 #-1
+                reward=-0.3 #-1 #-0.5
                 print " === Too Long Episode ! ==="
 
             if self.white_area_steps_flag==1:
                 #reward=self.reward-1.0
-                reward=-0.5 #-1
+                reward=-0.3 #-1 #-0.5
                 print " === Too Much Time on White area ! ==="
 
 
@@ -905,6 +929,11 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             self.box_2_collected=0
             self.box_3_collected=0
             self.box_4_collected=0
+
+            self.box_1_collected_reward=0
+            self.box_2_collected_reward=0
+            self.box_3_collected_reward=0
+            self.box_4_collected_reward=0
             
             self.white_area_steps_flag=0
             self.white_area_steps_counter=0
@@ -953,9 +982,10 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     
             
             if self.reward_for_back_to_lines==1:
-                reward=0.9
+                reward=0.4+0.001*self.white_area_steps_counter
                 self.flag_box_out=0
                 self.reward_for_back_to_lines=0
+                self.white_area_steps_counter=0
                 print " === Reward for back to lines ! ==="
 
             if self.box_1_collected==1 and self.box_1_collected_reward==0:
@@ -971,8 +1001,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                 self.box_3_collected_reward=1
 
             if self.box_4_collected==1 and self.box_4_collected_reward==0:
-                reward=0.2
-                self.box_4_collected_reward=1
+                 reward=0.2
+                 self.box_4_collected_reward=1
 
             
 

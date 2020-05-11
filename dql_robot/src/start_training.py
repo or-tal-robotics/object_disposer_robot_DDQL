@@ -22,6 +22,7 @@ import pandas as pd
 import os.path
 from os import path
 
+from sensor_msgs.msg import ChannelFloat32
 
 MAX_EXPERIENCE = 50000 #50000
 MIN_EXPERIENCE = 2000 #was 500 and before 5000 2000
@@ -32,6 +33,7 @@ LASER_MIN = 0.1
 LASER_MAX = 10
 K = 3 #4
 n_history = 4
+
 
 
 def smooth(x):
@@ -64,7 +66,7 @@ def play_ones(
             batch_sz,
             epsilon,
             epsilon_change,
-            epsilon_min):
+            epsilon_min,avg_reward):
     
     t0 = datetime.now()
     obs = env.reset()
@@ -103,6 +105,7 @@ def play_ones(
     record = True
     done = False
     loss = 0
+    
     while not done:
         
         if total_t % TARGET_UPDATE_PERIOD == 0:
@@ -112,7 +115,7 @@ def play_ones(
             print("model is been copied!")
         #action.append(prey_model.sample_action(state_prey1, state_prey2, epsilon))
         action = object_disposer_robot_model.sample_action(state_object_disposer_robot,state_object_disposer_robot_lsr, epsilon)
-        obs, reward, done, _ = env.step(action)
+        obs, reward, done, _ = env.step(action,avg_reward)
         img_obs = obs[0]
         lsr_obs = obs[1]
         
@@ -151,6 +154,7 @@ def play_ones(
 if __name__ == '__main__':
     print("Starting training!!!")
     
+    
 
     
 
@@ -188,7 +192,7 @@ if __name__ == '__main__':
     epsilon = rospy.get_param("/turtlebot2/epsilon")
     epsilon_min = rospy.get_param("/turtlebot2/epsilon_min")
     #epsilon_change = (epsilon - epsilon_min) / 100000 150000 300000
-    epsilon_change = (epsilon - epsilon_min) / 100000
+    epsilon_change = (epsilon - epsilon_min) / 102000
     
     # experience_replay_buffer_prey = ReplayMemory_multicamera(frame_height = IM_SIZE, fram_width=IM_SIZE, agent_history_lenth=n_history)
     # prey_model = DQN_prey(
@@ -245,12 +249,13 @@ if __name__ == '__main__':
 
 
     print("Initializing experience replay buffer...")
+    
     obs = env.reset()
     
     for i in range(MIN_EXPERIENCE):
-        
+        avg_reward=0
         action = np.random.choice(K)
-        obs, reward, done, _ = env.step(action)
+        obs, reward, done, _ = env.step(action,avg_reward)
         img_obs=obs[0]
         lsr_obs=obs[1]
 
@@ -265,7 +270,7 @@ if __name__ == '__main__':
 
     
     print("Done! Starts Training newwww!!")
-            
+           
     #print "11111"
     #with open('/home/lab/igal_ws/src/object_disposer_robot_DDQL/dql_robot/src/results/results.csv', 'w') as newFile:
     with open(rospack.get_path('dql_robot')+'/src/results/results.csv', 'w') as newFile:
@@ -286,7 +291,7 @@ if __name__ == '__main__':
                 train_idxs = [0]
 
     
-
+        avg_reward=episode_rewards[max(0,i-100):i+1].mean()
         total_t, episode_reward, duration, num_steps_in_episode, time_per_step, epsilon, loss = play_ones(
                 env,
                 total_t,
@@ -297,7 +302,7 @@ if __name__ == '__main__':
                 batch_sz,
                 epsilon,
                 epsilon_change,
-                epsilon_min)
+                epsilon_min,avg_reward)
         last_100_avg = []
         
         # episode_rewards[ii,i] = episode_reward[ii]
@@ -316,7 +321,9 @@ if __name__ == '__main__':
 
         
         
-
+        avg_reward=episode_rewards[max(0,i-100):i+1].mean()
+        #avg_reward=avg_reward.item()
+        
         print("Episode:", i ,
                 "Duration:", duration,
                 "Num steps:", num_steps_in_episode,
