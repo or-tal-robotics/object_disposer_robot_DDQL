@@ -241,8 +241,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         """
         rospy.logdebug("Start Get Observation ==>")
         #observations from camera
-        #img_observations = self.get_camera_rgb_image_raw_top_camera()
-        img_observations = self.get_camera_rgb_image_raw()
+        img_observations = self.get_camera_rgb_image_raw_top_camera()
+        #img_observations = self.get_camera_rgb_image_raw()
 
 
         #new addition 10.3.20
@@ -262,8 +262,8 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
         rospy.Subscriber('/episode_counter', Int16,Callback_episode)
         #print(episode_number)
         #print(avg_reward)
-        if avg_reward>0 and episode_number>1000:
-            self.white_area_steps_max=800
+        if avg_reward>0.35 and ((episode_number>1000 and episode_number<1200) or (episode_number>1500 and episode_number<1600) or (episode_number>1800 and episode_number<1900)) :
+            self.white_area_steps_max=700
         else:
             self.white_area_steps_max=250 #300
         #print(self.white_area_steps_max)
@@ -898,12 +898,12 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
             
             if self.steps_flag==1:
                 #reward=self.reward-1.0
-                reward=-0.3 #-1 #-0.5
+                reward=-0.4 #-1 #-0.5
                 print " === Too Long Episode ! ==="
 
             if self.white_area_steps_flag==1:
                 #reward=self.reward-1.0
-                reward=-0.3 #-1 #-0.5
+                reward=-0.4 #-1 #-0.5
                 print " === Too Much Time on White area ! ==="
 
 
@@ -982,27 +982,27 @@ class CatchEnv(multirobot_catch_env.TurtleBot2catchEnv):
                     
             
             if self.reward_for_back_to_lines==1:
-                reward=0.4+0.001*self.white_area_steps_counter
+                reward=0.2
                 self.flag_box_out=0
                 self.reward_for_back_to_lines=0
                 self.white_area_steps_counter=0
                 print " === Reward for back to lines ! ==="
 
-            if self.box_1_collected==1 and self.box_1_collected_reward==0:
-                reward=0.2
-                self.box_1_collected_reward=1
+            #if self.box_1_collected==1 and self.box_1_collected_reward==0:
+                #reward=0.2
+                #self.box_1_collected_reward=1
 
-            if self.box_2_collected==1 and self.box_2_collected_reward==0:
-                reward=0.2
-                self.box_2_collected_reward=1
+           # if self.box_2_collected==1 and self.box_2_collected_reward==0:
+               # reward=0.2
+               # self.box_2_collected_reward=1
 
-            if self.box_3_collected==1 and self.box_3_collected_reward==0:
-                reward=0.2
-                self.box_3_collected_reward=1
+          # if self.box_3_collected==1 and self.box_3_collected_reward==0:
+            #    reward=0.2
+             #   self.box_3_collected_reward=1
 
-            if self.box_4_collected==1 and self.box_4_collected_reward==0:
-                 reward=0.2
-                 self.box_4_collected_reward=1
+           # if self.box_4_collected==1 and self.box_4_collected_reward==0:
+              #   reward=0.2
+              #   self.box_4_collected_reward=1
 
             
 

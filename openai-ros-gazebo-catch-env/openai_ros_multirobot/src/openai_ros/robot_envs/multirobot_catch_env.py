@@ -396,6 +396,7 @@ class TurtleBot2catchEnv(robot_gazebo_env.RobotGazeboEnv):
         
         
         coordinate_matrix_resize=tf.resize(coordinate_matrix,(64,64))
+        #coordinate_matrix_resize=np.zeros((64,64))
         self.coordinate_matrix=coordinate_matrix_resize
         
         

@@ -7,43 +7,40 @@ from tensorflow.keras.layers import Dense, Flatten, Conv2D, Input, BatchNormaliz
 from tensorflow.keras import Model
 from tensorflow.keras.losses import Huber
 import numpy as np
-from tensorflow.keras import regularizers
 
 class DQN():
     def __init__(self, K, image_size):
-        initializer = tf.random_normal_initializer(0., 0.02)
         self.K = K
         self.X_img = Input(shape=[image_size,image_size,4])
         Z_image = self.X_img / 255.0
-        Z_image = Conv2D(32, 3,input_shape=(image_size, image_size, 4), activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_image)
-        
+        Z_image = Conv2D(32, 3,input_shape=(image_size, image_size, 4), activation='relu')(Z_image)
         Z_image = MaxPooling2D(pool_size=(2, 2))(Z_image)
         Z_image = BatchNormalization()(Z_image)
-        #Z_image = Conv2D(32, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_image)
-        #Z_image = MaxPooling2D(pool_size=(2, 2))(Z_image)
-        #Z_image = BatchNormalization()(Z_image)
-        #Z_image = Conv2D(64, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_image)
-        #Z_image = MaxPooling2D(pool_size=(2, 2))(Z_image)
-        #Z_image = BatchNormalization()(Z_image)
-        Z_image = Conv2D(64, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_image)
+        Z_image = Conv2D(32, 3, activation='relu')(Z_image)
+        Z_image = MaxPooling2D(pool_size=(2, 2))(Z_image)
+        Z_image = BatchNormalization()(Z_image)
+        Z_image = Conv2D(64, 3, activation='relu')(Z_image)
+        Z_image = MaxPooling2D(pool_size=(2, 2))(Z_image)
+        Z_image = BatchNormalization()(Z_image)
+        Z_image = Conv2D(64, 3, activation='relu')(Z_image)
         Z_image = Flatten()(Z_image)
 
         self.X_lsr = Input(shape=[image_size,image_size,4])
         Z_lsr = self.X_lsr / 255.0
-        Z_lsr = Conv2D(32, 3,input_shape=(image_size, image_size, 4), activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_lsr)
+        Z_lsr = Conv2D(32, 3,input_shape=(image_size, image_size, 4), activation='relu')(Z_lsr)
         Z_lsr = MaxPooling2D(pool_size=(2, 2))(Z_lsr)
         Z_lsr = BatchNormalization()(Z_lsr)
-        #Z_lsr = Conv2D(32, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_lsr)
-        #Z_lsr = MaxPooling2D(pool_size=(2, 2))(Z_lsr)
-        #Z_lsr = BatchNormalization()(Z_lsr)
-        #Z_lsr = Conv2D(64, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_lsr)
-        #Z_lsr = MaxPooling2D(pool_size=(2, 2))(Z_lsr)
-        #Z_lsr = BatchNormalization()(Z_lsr)
-        Z_lsr = Conv2D(64, 3, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(Z_lsr)
+        Z_lsr = Conv2D(32, 3, activation='relu')(Z_lsr)
+        Z_lsr = MaxPooling2D(pool_size=(2, 2))(Z_lsr)
+        Z_lsr = BatchNormalization()(Z_lsr)
+        Z_lsr = Conv2D(64, 3, activation='relu')(Z_lsr)
+        Z_lsr = MaxPooling2D(pool_size=(2, 2))(Z_lsr)
+        Z_lsr = BatchNormalization()(Z_lsr)
+        Z_lsr = Conv2D(64, 3, activation='relu')(Z_lsr)
         Z_lsr = Flatten()(Z_lsr)
 
         C = tf.concat([Z_image,Z_lsr], axis=1)
-        C = Dense(512, activation='relu',kernel_initializer=initializer, kernel_regularizer=regularizers.l2(0.001))(C)
+        C = Dense(512, activation='relu')(C)
         self.predict_op = Dense(self.K)(C)
         
         
@@ -52,7 +49,7 @@ class DQN():
         self.model = Model(inputs=[self.X_img,self.X_lsr], outputs=self.predict_op)
         self.loss_object  = Huber()
         
-        initial_learning_rate = 1e-6
+        
         
         self.train_op = tf.keras.optimizers.Adam(1e-6)
             
